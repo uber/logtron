@@ -1,0 +1,61 @@
+{
+  "name": "logtron",
+  "version": "4.2.2",
+  "description": "A logging MACHINE",
+  "keywords": [],
+  "author": "Raynos<raynos2@gmail>",
+  "repository": "git://github.com/uber/logtron.git",
+  "main": "logger.js",
+  "homepage": "https://github.com/uber/logtron",
+  "bugs": {
+    "url": "https://github.com/uber/logtron/issues",
+    "email": "raynos2@gmail.com"
+  },
+  "dependencies": {
+    "airlock": "^2.0.0",
+    "core-util-is": "^1.0.1",
+    "error": "^4.0.0",
+    "inherits": "^2.0.1",
+    "lodash.isfinite": "~2.4.1",
+    "mkdirp": "~0.3.5",
+    "nodemailer": "~0.5.14",
+    "raven": "^0.6.3",
+    "readable-stream": "^1.0.27-1",
+    "run-parallel": "^1.0.0",
+    "winston": "~0.7.2",
+    "kafka-logger": "uber/kafka-logger#v2.0.0",
+    "sentry-logger": "uber/sentry-logger#v2.0.0",
+    "xtend": "^3.0.0"
+  },
+  "devDependencies": {
+    "body": "~4.4.2",
+    "date-format": "0.0.2",
+    "istanbul": "~0.1.46",
+    "jshint": "^2.5.2",
+    "uber-nodesol": "uber/nodesol#v0.3.12",
+    "opn": "^0.1.2",
+    "pre-commit": "0.0.4",
+    "rimraf": "^2.2.8",
+    "tap-spec": "^0.1.9",
+    "tape": "^2.12.3",
+    "uuid": "~1.4.1"
+  },
+  "scripts": {
+    "test": "npm run jshint -s && NODE_ENV=test node test/index.js | tap-spec",
+    "fast-test": "NODE_ENV=test node test/index.js | tap-spec",
+    "jshint": "jshint --verbose .",
+    "jshint-pre-commit": "jshint --verbose $(git diff --cached --name-only | grep '\\.js$')",
+    "cover": "istanbul cover --report none --print detail test/index.js",
+    "view-cover": "istanbul report html && opn ./coverage/index.html",
+    "start-zk": "zookeeper-server-start.sh ./test/config/zookeeper.properties",
+    "start-kafka": "kafka-server-start.sh ./test/config/server.properties"
+  },
+  "engines": {
+    "node": ">= 0.8.x"
+  },
+  "pre-commit": [
+    "jshint-pre-commit",
+    "fast-test"
+  ],
+  "private": true
+}
