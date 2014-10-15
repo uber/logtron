@@ -1,4 +1,4 @@
-var SentryServer = require('winston-sentry/test/lib/sentry-server.js');
+var SentryServer = require('sentry-logger/test/lib/sentry-server.js');
 var Logger = require('../../logger.js');
 var SentryBackend = require('../../backends/sentry.js');
 

@@ -2,7 +2,7 @@ var test = require('tape');
 var uuid = require('uuid');
 var test = require('tape');
 var net = require('net');
-var NodeSol = require('nodesol').NodeSol;
+var NodeSol = require('uber-nodesol').NodeSol;
 
 var Logger = require('../logger.js');
 var KafkaBackend = require('../backends/kafka.js');

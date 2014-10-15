@@ -2,7 +2,6 @@ var test = require('tape');
 
 var Logger = require('../logger.js');
 
-require('./legacy/');
 require('./backend-without-destroy.js');
 require('./console-errors.js');
 require('./console.js');

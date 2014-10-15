@@ -1,5 +1,5 @@
 var net = require('net');
-var NodeSol = require('nodesol').NodeSol;
+var NodeSol = require('uber-nodesol').NodeSol;
 var uuid = require('uuid');
 
 var Logger = require('../../logger.js');
