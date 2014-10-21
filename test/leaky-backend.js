@@ -1,64 +1,64 @@
-var test = require('tape');
+var assert = require('assert');
 var Writable = require('readable-stream/writable');
 
 var Logger = require('../logger.js');
 
 var startRSS = process.memoryUsage().rss;
 
-test('Logger supports back pressure', function t(assert) {
-    var backend = {
-        createStream: function () {
-            return LeakStream();
+console.log('# Logger supports back pressure');
+
+var backend = {
+    createStream: function () {
+        return LeakStream();
+    }
+};
+
+var logger = Logger({
+    meta: {},
+    backends: {
+        myBackend: backend
+    },
+    levels: {
+        info: {
+            backends: ['myBackend'],
+            level: 30
         }
-    };
+    }
+});
 
-    var logger = Logger({
-        meta: {},
-        backends: {
-            myBackend: backend
-        },
-        levels: {
-            info: {
-                backends: ['myBackend'],
-                level: 30
-            }
-        }
-    });
-    
-    var onceA = checkedWrite(logger);
-    // console.log('onceA', onceA);
-    assert.equal(onceA.after.stream.length, 1000);
-    assert.equal(onceA.after.stream.buffer, 999);
+var onceA = checkedWrite(logger);
+// console.log('onceA', onceA);
+assert.equal(onceA.after.stream.length, 1000);
+assert.equal(onceA.after.stream.buffer, 999);
 
-    var deltaA = memoryGrowth(onceA);
+var deltaA = memoryGrowth(onceA);
 
-    assert.ok(deltaA > 1,
-        'expected deltaA to be greater then 10 but found ' + deltaA);
+assert.ok(deltaA > 5,
+    'expected deltaA to be greater then 5 but found ' + deltaA);
+
+setTimeout(function () {
+    var onceB = checkedWrite(logger);
+    // console.log('onceB', onceB);
+    assert.equal(onceB.after.stream.length, 1000);
+    assert.equal(onceB.after.stream.buffer, 999);
+
+    var deltaB = memoryGrowth(onceB);
+
+    assert.ok(deltaB < 0.1);
 
     setTimeout(function () {
-        var onceB = checkedWrite(logger);
-        // console.log('onceB', onceB);
-        assert.equal(onceB.after.stream.length, 1000);
-        assert.equal(onceB.after.stream.buffer, 999);
+        var onceC = checkedWrite(logger);
+        // console.log('onceC', onceC);
+        assert.equal(onceC.after.stream.length, 1000);
+        assert.equal(onceC.after.stream.buffer, 999);
 
-        var deltaB = memoryGrowth(onceB);
+        var deltaC = memoryGrowth(onceC);
 
-        assert.ok(deltaB < 0.1);
+        assert.ok(deltaC < 0.1);
 
-        setTimeout(function () {
-            var onceC = checkedWrite(logger);
-            // console.log('onceC', onceC);
-            assert.equal(onceC.after.stream.length, 1000);
-            assert.equal(onceC.after.stream.buffer, 999);
-
-            var deltaC = memoryGrowth(onceC);
-
-            assert.ok(deltaC < 0.1);
-
-            assert.end();
-        }, 50);
+        logger.destroy();
     }, 50);
-});
+}, 50);
 
 function memoryGrowth(x) {
     return (

@@ -2,7 +2,7 @@ var test = require('tape');
 
 var Logger = require('../logger.js');
 
-require('./leaky-backend.js');
+require('./leaky-backend-master.js');
 require('./backend-without-destroy.js');
 require('./console-errors.js');
 require('./console.js');
