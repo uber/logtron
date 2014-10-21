@@ -31,6 +31,7 @@
     "body": "~4.4.2",
     "date-format": "0.0.2",
     "istanbul": "~0.1.46",
+    "jscs": "^1.7.3",
     "jshint": "^2.5.2",
     "opn": "^0.1.2",
     "pre-commit": "0.0.4",

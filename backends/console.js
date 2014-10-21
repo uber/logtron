@@ -14,12 +14,15 @@ function ConsoleBackend() {
 
 inherits(ConsoleBackend, EventEmitter);
 
-ConsoleBackend.prototype.createStream = function createStream() {
-    var logger = new ConsoleLogger({
-        timestamp: true
-    });
+ConsoleBackend.prototype.createStream =
+    function createStream(meta, opts) {
+        var logger = new ConsoleLogger({
+            timestamp: true
+        });
 
-    return LoggerStream(logger);
-};
+        return LoggerStream(logger, {
+            highWaterMark: opts.highWaterMark
+        });
+    };
 
 module.exports = ConsoleBackend;

@@ -1,0 +1,111 @@
+var test = require('tape');
+var Writable = require('readable-stream/writable');
+
+var Logger = require('../logger.js');
+
+var startRSS = process.memoryUsage().rss;
+
+test('Logger supports back pressure', function t(assert) {
+    var backend = {
+        createStream: function () {
+            return LeakStream();
+        }
+    };
+
+    var logger = Logger({
+        meta: {},
+        backends: {
+            myBackend: backend
+        },
+        levels: {
+            info: {
+                backends: ['myBackend'],
+                level: 30
+            }
+        }
+    });
+    
+    var onceA = checkedWrite(logger);
+    // console.log('onceA', onceA);
+    assert.equal(onceA.after.stream.length, 1000);
+    assert.equal(onceA.after.stream.buffer, 999);
+
+    var deltaA = memoryGrowth(onceA);
+
+    assert.ok(deltaA > 1,
+        'expected deltaA to be greater then 10 but found ' + deltaA);
+
+    setTimeout(function () {
+        var onceB = checkedWrite(logger);
+        // console.log('onceB', onceB);
+        assert.equal(onceB.after.stream.length, 1000);
+        assert.equal(onceB.after.stream.buffer, 999);
+
+        var deltaB = memoryGrowth(onceB);
+
+        assert.ok(deltaB < 0.1);
+
+        setTimeout(function () {
+            var onceC = checkedWrite(logger);
+            // console.log('onceC', onceC);
+            assert.equal(onceC.after.stream.length, 1000);
+            assert.equal(onceC.after.stream.buffer, 999);
+
+            var deltaC = memoryGrowth(onceC);
+
+            assert.ok(deltaC < 0.1);
+
+            assert.end();
+        }, 50);
+    }, 50);
+});
+
+function memoryGrowth(x) {
+    return (
+        (x.after.mem.rss - startRSS) / 
+        (x.before.mem.rss - startRSS)
+    ) - 1;
+}
+
+function checkedWrite(logger) {
+    var LOOP = 1e5; // write 10k items, hwm is 1k
+
+    var before = inspect(logger);
+
+    for (var i = 0; i < LOOP; i++) {
+        logger.info('some message', {
+            random: 'junk'
+        });
+    }
+
+    return {
+        before: before,
+        after: inspect(logger)
+    };
+}
+
+function LeakStream() {
+    var s = new Writable({
+        objectMode: true,
+        highWaterMark: 1000
+    });
+    s._write = function leak(chunk, enc, cb) {
+        // do not call the cb()
+        // ignore the chunk
+        // infinite memory leak.
+    };
+    return s;
+}
+
+function inspect(logger) {
+    var state = logger.streams.myBackend._writableState;
+
+    return {
+        mem: process.memoryUsage(),
+        stream: {
+            length: state.length,
+            buffer: state.buffer.length
+            // ,keys: Object.keys(state)
+        }
+    };
+}

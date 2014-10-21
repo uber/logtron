@@ -41,7 +41,9 @@ function Logger(opts) {
                 return acc;
             }
 
-            acc[backendName] = backend.createStream(meta);
+            acc[backendName] = backend.createStream(meta, {
+                highWaterMark: opts.highWaterMark || 1000
+            });
             return acc;
         }, {});
 

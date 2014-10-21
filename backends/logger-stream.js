@@ -1,13 +1,14 @@
 var Writable = require('readable-stream').Writable;
 var inherits = require('inherits');
 
-function LoggerStream(logger, destroyCb) {
+function LoggerStream(logger, opts, destroyCb) {
     if (!(this instanceof LoggerStream)) {
-        return new LoggerStream(logger, destroyCb);
+        return new LoggerStream(logger, opts, destroyCb);
     }
 
     Writable.call(this, {
-        objectMode: true
+        objectMode: true,
+        highWaterMark: opts.highWaterMark
     });
 
     this.logger = logger;

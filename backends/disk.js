@@ -21,15 +21,18 @@ function DiskBackend(opts) {
 
 inherits(DiskBackend, EventEmitter);
 
-DiskBackend.prototype.createStream = function createStream(meta) {
-    var fileName = meta.team + '-' + meta.project + '.log';
-    var logger = new DailyRotateFile({
-        filename: path.join(this.folder, fileName),
-        datePattern: '-yyyyMMdd',
-        json: false
-    });
+DiskBackend.prototype.createStream =
+    function createStream(meta, opts) {
+        var fileName = meta.team + '-' + meta.project + '.log';
+        var logger = new DailyRotateFile({
+            filename: path.join(this.folder, fileName),
+            datePattern: '-yyyyMMdd',
+            json: false
+        });
 
-    return LoggerStream(logger);
-};
+        return LoggerStream(logger, {
+            highWaterMark: opts.highWaterMark
+        });
+    };
 
 module.exports = DiskBackend;
