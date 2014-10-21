@@ -25,50 +25,53 @@ function SentryBackend(opts) {
 
 inherits(SentryBackend, EventEmitter);
 
-SentryBackend.prototype.createStream = function createStream() {
-    var backend = this;
-    var ravenClient = new RavenClient(backend.dsn);
+SentryBackend.prototype.createStream =
+    function createStream(meta, opts) {
+        var backend = this;
+        var ravenClient = new RavenClient(backend.dsn);
 
-    var logger = new SentryLogger({
-        level: 'error',
-        enabled: true,
-        ravenClient: ravenClient,
-        tags: backend.defaultTags || {},
-        computeErrLoc: computeErrLoc,
-        onRavenError: onRavenError,
-        sentryProber: new Prober({
-            title: 'sentry',
+        var logger = new SentryLogger({
+            level: 'error',
             enabled: true,
-            detectFailuresBy: 'event',
-            statsd: backend.statsd,
-            backend: ravenClient,
-            failureEvent: 'error',
-            successEvent: 'logged'
-        })
-    });
-
-    return LoggerStream(logger);
-
-    function onRavenError(e) {
-        var message = new Buffer(String(e.sendMessage || ''), 'base64');
-
-        zlib.inflate(message, function (err, buff) {
-            var sendMessage = String(buff || '');
-
-            backend.emit('warn', 'Raven failed to upload to Sentry: ', {
-                message: e.message,
-                stack: e.stack,
-                reason: e.reason,
-                statusCode: e.statusCode,
-                sendMessage: sendMessage,
-                headers: e.response && e.response.headers
-            });
-            backend.emit('info', 'could not log to raven', {
-                sendMessage: sendMessage
-            });
+            ravenClient: ravenClient,
+            tags: backend.defaultTags || {},
+            computeErrLoc: computeErrLoc,
+            onRavenError: onRavenError,
+            sentryProber: new Prober({
+                title: 'sentry',
+                enabled: true,
+                detectFailuresBy: 'event',
+                statsd: backend.statsd,
+                backend: ravenClient,
+                failureEvent: 'error',
+                successEvent: 'logged'
+            })
         });
-    }
-};
+
+        return LoggerStream(logger, {
+            highWaterMark: opts.highWaterMark
+        });
+
+        function onRavenError(e) {
+            var message = new Buffer(String(e.sendMessage || ''), 'base64');
+
+            zlib.inflate(message, function (err, buff) {
+                var sendMessage = String(buff || '');
+
+                backend.emit('warn', 'Raven failed to upload to Sentry: ', {
+                    message: e.message,
+                    stack: e.stack,
+                    reason: e.reason,
+                    statusCode: e.statusCode,
+                    sendMessage: sendMessage,
+                    headers: e.response && e.response.headers
+                });
+                backend.emit('info', 'could not log to raven', {
+                    sendMessage: sendMessage
+                });
+            });
+        }
+    };
 
 module.exports = SentryBackend;
 

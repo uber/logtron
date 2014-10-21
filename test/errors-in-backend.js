@@ -49,7 +49,8 @@ function ErrorBackend() {
             return {
                 write: function (chunk, cb) {
                     cb(new Error('write failed'));
-                }
+                },
+                _writableState: {}
             };
         }
     };
