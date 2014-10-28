@@ -17,6 +17,7 @@ require('./pid-and-host.js');
 require('./sentry-errors.js');
 require('./sentry.js');
 require('./throws-assertions.js');
+require('./access.js');
 
 test('removing levels', function (assert) {
     var logger = Logger({
