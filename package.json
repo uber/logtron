@@ -16,7 +16,7 @@
     "core-util-is": "^1.0.1",
     "error": "^4.0.0",
     "inherits": "^2.0.1",
-    "kafka-logger": "^2.0.0",
+    "kafka-logger": "^3.0.0",
     "lodash.isfinite": "~2.4.1",
     "mkdirp": "~0.3.5",
     "nodemailer": "~0.5.14",
