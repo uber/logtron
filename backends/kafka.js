@@ -12,6 +12,7 @@ function KafkaBackend(opts) {
 
     EventEmitter.call(this);
 
+    if (!opts) opts = {};
     this.properties = opts.properties || {};
     this.host = opts.host || 'localhost';
     this.port = opts.port || 2181;
