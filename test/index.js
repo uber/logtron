@@ -16,6 +16,7 @@ require('./optional-backends.js');
 require('./pid-and-host.js');
 require('./sentry-errors.js');
 require('./sentry.js');
+require('./stats.js');
 require('./throws-assertions.js');
 require('./access.js');
 

@@ -47,6 +47,8 @@ function Logger(opts) {
             return acc;
         }, {});
 
+    this.statsd = opts.statsd;
+
     var levels = extend(defaultLevels, opts.levels || {});
 
     Object.keys(levels)
@@ -95,6 +97,10 @@ function logMethod(logger, levelName, level) {
 
     function log(message, opts, callback) {
         var triplet = [levelName, message, opts];
+
+        if (this.statsd && typeof this.statsd.increment === 'function') {
+            this.statsd.increment('logtron.logged.' + levelName);
+        }
 
         level.transforms.forEach(function (transform) {
             triplet = transform(triplet);
