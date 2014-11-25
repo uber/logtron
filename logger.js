@@ -114,7 +114,7 @@ function logMethod(logger, levelName, level) {
                 return;
             }
 
-            if (callback) {
+            if (callback && typeof callback === 'function') {
                 return callback(err);
             }
 
