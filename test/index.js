@@ -1,8 +1,10 @@
+'use strict';
+
 var test = require('tape');
 
 var Logger = require('../logger.js');
 
-require('./leaky-backend-master.js');
+require('./default-backends.js');
 require('./backend-without-destroy.js');
 require('./console-errors.js');
 require('./console.js');
@@ -19,8 +21,9 @@ require('./sentry.js');
 require('./stats.js');
 require('./throws-assertions.js');
 require('./access.js');
+require('./leaky-backend-master.js');
 
-test('removing levels', function (assert) {
+test('removing levels', function t(assert) {
     var logger = Logger({
         backends: {},
         meta: {},
@@ -33,8 +36,3 @@ test('removing levels', function (assert) {
 
     assert.end();
 });
-
-setInterval(function () {
-    var handles = process._getActiveHandles();
-    console.log('handles', handles.length, handles[0]);
-}, 10000).unref();

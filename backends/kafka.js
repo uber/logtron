@@ -60,7 +60,9 @@ KafkaBackend.prototype.createStream =
                 producer.connection.connection._connection.destroy();
             }
 
-            logger.kafkaClient.zk.close();
+            if (logger.kafkaClient.zk) {
+                logger.kafkaClient.zk.close();
+            }
         });
     };
 

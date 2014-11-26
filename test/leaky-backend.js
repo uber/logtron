@@ -44,7 +44,8 @@ setTimeout(function () {
 
     var deltaB = memoryGrowth(onceB);
 
-    assert.ok(deltaB < 0.1);
+    assert.ok(deltaB < 1,
+        'expected deltaB to be less then 0.1 but found ' + deltaB);
 
     setTimeout(function () {
         var onceC = checkedWrite(logger);
@@ -68,7 +69,7 @@ function memoryGrowth(x) {
 }
 
 function checkedWrite(logger) {
-    var LOOP = 1e5; // write 10k items, hwm is 1k
+    var LOOP = 2e4; // write 2k items, hwm is 1k
 
     var before = inspect(logger);
 
