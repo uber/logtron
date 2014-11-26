@@ -5,6 +5,7 @@ var test = require('tape');
 var Logger = require('../logger.js');
 
 require('./default-backends.js');
+require('./circular-objects.js');
 require('./backend-without-destroy.js');
 require('./console-errors.js');
 require('./console.js');
