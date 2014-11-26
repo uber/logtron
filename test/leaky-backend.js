@@ -3,6 +3,7 @@ var Writable = require('readable-stream/writable');
 
 var Logger = require('../logger.js');
 
+// var counter = 0;
 var startRSS = process.memoryUsage().rss;
 
 console.log('# Logger supports back pressure');
@@ -28,34 +29,42 @@ var logger = Logger({
 
 var onceA = checkedWrite(logger);
 // console.log('onceA', onceA);
-assert.equal(onceA.after.stream.length, 1000);
-assert.equal(onceA.after.stream.buffer, 999);
+eqaulTAP(onceA.after.stream.length, 1000,
+    'onceA stream length is 1000');
+eqaulTAP(onceA.after.stream.buffer, 999,
+    'onceA stream buffer is 999');
 
 var deltaA = memoryGrowth(onceA);
 
-assert.ok(deltaA > 5,
+eqaulTAP(deltaA > 5, true,
     'expected deltaA to be greater then 5 but found ' + deltaA);
 
 setTimeout(function () {
     var onceB = checkedWrite(logger);
     // console.log('onceB', onceB);
-    assert.equal(onceB.after.stream.length, 1000);
-    assert.equal(onceB.after.stream.buffer, 999);
+    eqaulTAP(onceB.after.stream.length, 1000,
+        'onceB stream length is 1000');
+    eqaulTAP(onceB.after.stream.buffer, 999,
+        'onceB stream buffer is 999');
 
     var deltaB = memoryGrowth(onceB);
 
-    assert.ok(deltaB < 1,
-        'expected deltaB to be less then 0.1 but found ' + deltaB);
+    eqaulTAP(deltaB < 1, true,
+        'expected deltaB to be less then 1 but found ' + deltaB);
 
     setTimeout(function () {
         var onceC = checkedWrite(logger);
         // console.log('onceC', onceC);
-        assert.equal(onceC.after.stream.length, 1000);
-        assert.equal(onceC.after.stream.buffer, 999);
+        eqaulTAP(onceC.after.stream.length, 1000,
+            'onceC stream length is 1000');
+        eqaulTAP(onceC.after.stream.buffer, 999,
+            'onceC stream length is 999');
 
         var deltaC = memoryGrowth(onceC);
 
-        assert.ok(deltaC < 0.1);
+        eqaulTAP(deltaC < 0.1, true,
+            'expected deltaC to be less then 0.1 but found ' +
+            deltaC);
 
         logger.destroy();
     }, 50);
@@ -109,4 +118,14 @@ function inspect(logger) {
             // ,keys: Object.keys(state)
         }
     };
+}
+
+function eqaulTAP(a, b, message) {
+    try {
+        assert.equal(a, b, message);
+        console.log('ok ' + message);
+    } catch (err) {
+        console.log('not ok ' + message);
+        throw err;
+    }
 }
