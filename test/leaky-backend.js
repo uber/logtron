@@ -62,8 +62,8 @@ setTimeout(function () {
 
         var deltaC = memoryGrowth(onceC);
 
-        eqaulTAP(deltaC < 0.1, true,
-            'expected deltaC to be less then 0.1 but found ' +
+        eqaulTAP(deltaC < 0.5, true,
+            'expected deltaC to be less then 1 but found ' +
             deltaC);
 
         logger.destroy();
