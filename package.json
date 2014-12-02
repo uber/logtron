@@ -5,7 +5,7 @@
   "keywords": [],
   "author": "Raynos<raynos2@gmail>",
   "repository": "git://github.com/uber/logtron.git",
-  "main": "logger.js",
+  "main": "index.js",
   "homepage": "https://github.com/uber/logtron",
   "bugs": {
     "url": "https://github.com/uber/logtron/issues",
@@ -16,7 +16,7 @@
     "core-util-is": "^1.0.1",
     "error": "^4.0.0",
     "inherits": "^2.0.1",
-    "kafka-logger": "^2.0.0",
+    "kafka-logger": "^3.0.0",
     "lodash.isfinite": "~2.4.1",
     "mkdirp": "~0.3.5",
     "nodemailer": "~0.5.14",
@@ -37,7 +37,7 @@
     "pre-commit": "0.0.4",
     "rimraf": "^2.2.8",
     "tap-spec": "^0.1.9",
-    "tape": "^2.12.3",
+    "tape": "^3.0.3",
     "uber-nodesol": "^0.3.12",
     "uuid": "~1.4.1"
   },
@@ -46,7 +46,7 @@
     "fast-test": "NODE_ENV=test node test/index.js | tap-spec",
     "jshint": "jshint --verbose .",
     "jshint-pre-commit": "jshint --verbose $(git diff --cached --name-only | grep '\\.js$')",
-    "cover": "istanbul cover --report none --print detail test/index.js",
+    "cover": "istanbul cover --report html --print detail test/index.js",
     "view-cover": "istanbul report html && opn ./coverage/index.html",
     "start-zk": "zookeeper-server-start.sh ./test/config/zookeeper.properties",
     "start-kafka": "kafka-server-start.sh ./test/config/server.properties"

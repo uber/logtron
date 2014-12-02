@@ -7,11 +7,7 @@ logger used in realtime
 ## Example
 
 ```js
-var Logger = require('logtron/logger');
-var Disk = require('logtron/backends/disk');
-var Console = require('logtron/backends/console');
-var Kafka = require('logtron/backends/kafka');
-var Sentry = require('logtron/backends/sentry');
+var Logger = require('logtron');
 
 var statsd =  StatsdClient(...)
 
@@ -25,25 +21,16 @@ var logger = Logger({
         team: 'my-team',
         project: 'my-project'
     },
-    backends: {
-        disk: Disk({
-            folder: '/var/log/nodejs'
-        }),
-        console: Console(),
+    backends: Logger.defaultBackends({
+        logFolder: '/var/log/nodejs',
+        console: true,
+        kafka: { leafHost: 'localhost', leafPort: 9093 },
+        sentry: { id: '{sentryId}' }
+    }, {
         // pass in a statsd client to turn on an airlock prober
-        // on the kafka connection
-        kafka: Kafka({
-            host: 'localhost',
-            port: 2181,
-            statsd: statsd
-        }),
-        // pass in a statsd client to turn on an airlock prober
-        // on the sentry connection
-        sentry: Sentry({
-            dsn: '{sentryId}',
-            statsd: statsd
-        })
-    }
+        // on the kafka and sentry connection
+        statsd: statsd
+    })
 });
 
 /* now write your app and use your logger */
@@ -330,6 +317,109 @@ It's expected that shutdown the process once you have verified
   that the `fatal()` error message has been logged. You can
   do either a hard or soft shutdown.
 
+
+### `var backends = Logger.defaultBackends(options, clients)`
+
+```ocaml
+type Logger : { ... }
+
+type KafkaClient : Object
+type StatsdClient := {
+    increment: (String) => void
+}
+
+logtron := Logger & {
+    defaultBackends: (config: {
+        logFolder?: String,
+        kafka?: {
+            leafHost: String,
+            leafPort: Number
+        },
+        console?: Boolean,
+        sentry?: {
+            id: String
+        }
+    }, clients?: {
+        statsd: StatsdClient,
+        kafkaClient?: KafkaClient
+    }) => {
+        disk: Backend | null,
+        kafka: Backend | null,
+        console: Backend | null,
+        sentry: Backend | null
+    }
+}
+```
+
+Rather then configuring the backends for `logtron` yourself
+  you can use the `defaultBackend` function
+
+`defaultBackends` takes a set of options and returns a hash of
+  backends that you can pass to a logger like
+
+```js
+var logger = Logger({
+    backends: Logger.defaultBackends(backendConfig)
+})
+```
+
+You can also pass `defaultBackends` a `clients` argument to pass
+  in a statsd client. The statsd client will then be passed to the backends so that they can be instrumented with statsd.
+
+You can also configure a reusable `kafkaClient` on the `clients`
+  object. This must be an instance of `uber-nodesol-write`.
+
+#### `options.logFolder`
+
+`options.logFolder` is an optional string, if you want the disk
+  backend enabled you should set this to a folder on disk where
+  you want your disk logs written to.
+
+#### `options.kafka`
+
+`options.kafka` is an optional object, if you want the kafka
+  backend enabled you should set this to an object containing
+  a `"leafHost"` and `"leafPort"` key.
+
+`options.kafka.leafHost` should be a string and is the hostname 
+  of the kafka server to write to.
+
+`options.kafka.leafPort` should be a port and is the port
+  of the kafka server to write to.
+
+#### `options.console`
+
+`options.console` is an optional boolean, if you want the 
+  console backend enabled you should set this to `true`
+
+#### `options.sentry`
+
+`options.sentry` is an optional object, if you want the 
+  sentry backend enabled you should set this to an object 
+  containing an `"id"` key.
+
+`options.sentry.id` is the dsn uri used to talk to sentry.
+
+#### `clients`
+
+`clients` is an optional object, it contains all the concrete
+  service clients that the backends will use to communicate with
+  external services.
+
+#### `clients.statsd`
+
+If you want you backends instrumented with statsd you should
+  pass in a `statsd` client to `clients.statsd`. This ensures
+  that we enable airlock monitoring on the kafka and sentry
+  backend
+
+#### `clients.kafkaClient`
+
+If you want to re-use a single `kafkaClient` in your application
+  you can pass in an instance of the `uber-nodesol-write` module
+  and the logger will re-use this client isntead of creating
+  its own kafka client.
+
 ### Logging Errors
 
 > I want to log errors when I get them in my callbacks
@@ -498,8 +588,8 @@ The `Disk` depends on `meta.team` and `meta.project` to be
 
 ```ocaml
 logtron/backends/kafka := (options: {
-    host: String,
-    port: Number,
+    leafHost: String,
+    leafPort: Number,
     statsd?: Object
 }) => {
     createStream: (meta: Object) => WritableStream
@@ -512,19 +602,26 @@ logtron/backends/kafka := (options: {
 The `Kafka` backend depends on `meta.team` and `meta.project`
   and uses those to define which topic it will write to.
 
-#### `options.host`
+#### `options.leafHost`
 
-Specify the `host` which we should use when connecting to kafka
+Specify the `leafHost` which we should use when connecting to kafka
 
-#### `options.port`
+#### `options.leafPort`
 
-Specify the `port` which we should use when connecting to kafka
+Specify the `leafPort` which we should use when connecting to kafka
 
 #### `options.statsd`
 
 If you pass a `statsd` client to the `Kafka` backend it will use
   the `statsd` client to record information about the health
   of the `Kafka` backend.
+
+#### `options.kafkaClient`
+
+If you pass a `kafkaClient` to the `Kafka` backend it will use
+  this to write to kafka instead of creating it's own client.
+  You must ensure this is an instance of the `uber-nodesol-write`
+  module.
 
 ### `var backend = Sentry(options)`
 

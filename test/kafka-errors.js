@@ -1,6 +1,8 @@
+'use strict';
+
 var test = require('tape');
 
-var KafkaLogger = require('./lib/kafka-logger.js');
+var KafkaLogger = require('./lib/full-fat-kafka-logger.js');
 
 test('can .error("message", new Error())', function (assert) {
     KafkaLogger(function (err, logger) {

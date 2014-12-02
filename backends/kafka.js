@@ -13,10 +13,18 @@ function KafkaBackend(opts) {
     EventEmitter.call(this);
 
     if (!opts) opts = {};
+
+    if (opts.port || opts.host) {
+        throw new Error('logtron.KafkaBackend: ' +
+            'opts.host and opts.port are deprecated.\n' +
+            'Please use opts.leafHost and opts.leafPort instead.');
+    }
+
     this.properties = opts.properties || {};
-    this.host = opts.host || 'localhost';
-    this.port = opts.port || 2181;
+    this.leafHost = opts.leafHost || 'localhost';
+    this.leafPort = opts.leafPort || 9093;
     this.statsd = opts.statsd || null;
+    this.kafkaClient = opts.kafkaClient || null;
 }
 
 inherits(KafkaBackend, EventEmitter);
@@ -32,8 +40,9 @@ KafkaBackend.prototype.createStream =
                 ts: 'pyepoch',
                 isodate: 'iso'
             },
-            host: this.host,
-            port: this.port,
+            leafHost: this.leafHost,
+            leafPort: this.leafPort,
+            kafkaClient: this.kafkaClient,
             kafkaProber: new Prober({
                 title: 'kafka-winston',
                 enabled: true,
@@ -53,7 +62,9 @@ KafkaBackend.prototype.createStream =
                 producer.connection.connection._connection.destroy();
             }
 
-            logger.kafkaClient.zk.close();
+            if (logger.kafkaClient.zk) {
+                logger.kafkaClient.zk.close();
+            }
         });
     };
 

@@ -1,3 +1,6 @@
+type StatsdClient : Object
+type KafkaClient : Object
+
 type Logger := EventEmitter & {
     trace: (String, Object, cb?: Callback) => void,
     debug: (String, Object, cb?: Callback) => void,
@@ -48,8 +51,8 @@ rt-logger/backends/disk := ({
 }) => Backend
 
 rt-logger/backends/kafka := ({
-    host?: String,
-    port?: Number,
+    leafHost?: String,
+    leafPort?: Number,
     properties?: Object,
     statsd?: Object
 }) => Backend
@@ -62,4 +65,24 @@ rt-logger/backends/sentry := ({
     statsd?: Object
 }) => Backend
 
-rt-logger/logger := (LoggerOpts) => Logger
+rt-logger/logger := (LoggerOpts) => Logger & {
+    defaultBackends: (config: {
+        logFolder?: String,
+        kafka?: {
+            leafHost: String,
+            leafPort: Number
+        },
+        console?: Boolean,
+        sentry?: {
+            id: String
+        }
+    }, clients?: {
+        statsd: StatsdClient,
+        kafkaClient?: KafkaClient
+    }) => {
+        disk: Backend | null,
+        kafka: Backend | null,
+        console: Backend | null,
+        sentry: Backend | null
+    }
+}

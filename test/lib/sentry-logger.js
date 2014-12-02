@@ -1,3 +1,5 @@
+'use strict';
+
 var SentryServer = require('sentry-logger/test/lib/sentry-server.js');
 var Logger = require('../../logger.js');
 var SentryBackend = require('../../backends/sentry.js');
@@ -28,7 +30,7 @@ function createLogger(opts, listener) {
     });
 
     var _destroy = logger.destroy;
-    logger.destroy = function () {
+    logger.destroy = function interceptDestroy() {
         if (server) {
             server.close();
         }
