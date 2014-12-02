@@ -1,3 +1,6 @@
+type StatsdClient : Object
+type KafkaClient : Object
+
 type Logger := EventEmitter & {
     trace: (String, Object, cb?: Callback) => void,
     debug: (String, Object, cb?: Callback) => void,
@@ -74,7 +77,8 @@ rt-logger/logger := (LoggerOpts) => Logger & {
             id: String
         }
     }, clients?: {
-        statsd: StatsdClient
+        statsd: StatsdClient,
+        kafkaClient?: KafkaClient
     }) => {
         disk: Backend | null,
         kafka: Backend | null,

@@ -323,6 +323,7 @@ It's expected that shutdown the process once you have verified
 ```ocaml
 type Logger : { ... }
 
+type KafkaClient : Object
 type StatsdClient := {
     increment: (String) => void
 }
@@ -339,7 +340,8 @@ logtron := Logger & {
             id: String
         }
     }, clients?: {
-        statsd: StatsdClient
+        statsd: StatsdClient,
+        kafkaClient?: KafkaClient
     }) => {
         disk: Backend | null,
         kafka: Backend | null,
@@ -363,6 +365,9 @@ var logger = Logger({
 
 You can also pass `defaultBackends` a `clients` argument to pass
   in a statsd client. The statsd client will then be passed to the backends so that they can be instrumented with statsd.
+
+You can also configure a reusable `kafkaClient` on the `clients`
+  object. This must be an instance of `uber-nodesol-write`.
 
 #### `options.logFolder`
 
@@ -407,6 +412,13 @@ If you want you backends instrumented with statsd you should
   pass in a `statsd` client to `clients.statsd`. This ensures
   that we enable airlock monitoring on the kafka and sentry
   backend
+
+#### `clients.kafkaClient`
+
+If you want to re-use a single `kafkaClient` in your application
+  you can pass in an instance of the `uber-nodesol-write` module
+  and the logger will re-use this client isntead of creating
+  its own kafka client.
 
 ### Logging Errors
 
@@ -603,6 +615,13 @@ Specify the `leafPort` which we should use when connecting to kafka
 If you pass a `statsd` client to the `Kafka` backend it will use
   the `statsd` client to record information about the health
   of the `Kafka` backend.
+
+#### `options.kafkaClient`
+
+If you pass a `kafkaClient` to the `Kafka` backend it will use
+  this to write to kafka instead of creating it's own client.
+  You must ensure this is an instance of the `uber-nodesol-write`
+  module.
 
 ### `var backend = Sentry(options)`
 

@@ -56,7 +56,8 @@ function defaultBackends(config, clients) {
         kafka: config.kafka ? Kafka({
             leafHost: config.kafka.leafHost,
             leafPort: config.kafka.leafPort,
-            statsd: clients.statsd
+            statsd: clients.statsd,
+            kafkaClient: clients.kafkaClient
         }) : null,
         console: config.console ? Console() : null,
         sentry: config.sentry ? Sentry({
