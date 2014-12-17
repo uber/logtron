@@ -38,7 +38,6 @@
     "rimraf": "^2.2.8",
     "tap-spec": "^0.1.9",
     "tape": "^3.0.3",
-    "uber-nodesol": "^0.3.12",
     "uuid": "~1.4.1"
   },
   "scripts": {
