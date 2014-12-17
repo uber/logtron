@@ -1,6 +1,7 @@
 'use strict';
 
-var KafkaServer = require('./kafka-server.js');
+var KafkaServer = require(
+    'kafka-logger/test/lib/kafka-server.js');
 var Logger = require('../../index.js');
 
 module.exports = KafkaLogger;

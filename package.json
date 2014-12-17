@@ -16,7 +16,7 @@
     "core-util-is": "^1.0.1",
     "error": "^4.0.0",
     "inherits": "^2.0.1",
-    "kafka-logger": "^3.0.0",
+    "kafka-logger": "^3.1.0",
     "lodash.isfinite": "~2.4.1",
     "mkdirp": "~0.3.5",
     "nodemailer": "~0.5.14",
@@ -47,9 +47,7 @@
     "jshint": "jshint --verbose .",
     "jshint-pre-commit": "jshint --verbose $(git diff --cached --name-only | grep '\\.js$')",
     "cover": "istanbul cover --report html --print detail test/index.js",
-    "view-cover": "istanbul report html && opn ./coverage/index.html",
-    "start-zk": "zookeeper-server-start.sh ./test/config/zookeeper.properties",
-    "start-kafka": "kafka-server-start.sh ./test/config/server.properties"
+    "view-cover": "istanbul report html && opn ./coverage/index.html"
   },
   "engines": {
     "node": ">= 0.8.x"
