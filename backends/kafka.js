@@ -25,6 +25,7 @@ function KafkaBackend(opts) {
     this.leafPort = opts.leafPort || 9093;
     this.statsd = opts.statsd || null;
     this.kafkaClient = opts.kafkaClient || null;
+    this.isDisabled = opts.isDisabled || null;
 }
 
 inherits(KafkaBackend, EventEmitter);
@@ -43,6 +44,7 @@ KafkaBackend.prototype.createStream =
             leafHost: this.leafHost,
             leafPort: this.leafPort,
             kafkaClient: this.kafkaClient,
+            isDisabled: this.isDisabled,
             kafkaProber: new Prober({
                 title: 'kafka-winston',
                 enabled: true,
