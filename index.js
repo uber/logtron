@@ -56,7 +56,7 @@ function defaultBackends(config, clients) {
         kafka: config.kafka ? Kafka({
             leafHost: config.kafka.leafHost,
             leafPort: config.kafka.leafPort,
-            isDisabled: config.kafka.isDisabled,
+            isDisabled: clients.isKafkaDisabled,
             statsd: clients.statsd,
             kafkaClient: clients.kafkaClient
         }) : null,

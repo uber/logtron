@@ -20,9 +20,11 @@ test('kafka is disabled', function (assert) {
             kafka: {
                 leafHost: 'localhost',
                 leafPort: server.port,
-                isDisabled: function isDisabled() {
-                    return isDisabledFlag;
-                }
+                
+            }
+        }, {
+            isKafkaDisabled: function isDisabled() {
+                return isDisabledFlag;
             }
         })
     });
