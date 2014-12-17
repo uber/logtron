@@ -5,7 +5,7 @@ var KafkaServer = require(
 
 var Logger = require('../index.js');
 
-test('kafka logging', function (assert) {
+test('kafka is disabled', function (assert) {
     var server = KafkaServer(function onMessage(msg) {
         server.emit('message', msg);
     });
