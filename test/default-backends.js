@@ -7,9 +7,11 @@ var uuid = require('uuid');
 var dateFormat = require('date-format');
 var fs = require('fs');
 var rimraf = require('rimraf');
-var SentryServer = require('sentry-logger/test/lib/sentry-server.js');
+var SentryServer = require(
+    'sentry-logger/test/lib/sentry-server.js');
+var KafkaServer = require(
+    'kafka-logger/test/lib/kafka-server.js');
 
-var KafkaServer = require('./lib/kafka-server.js');
 var captureStdio = require('./lib/capture-stdio.js');
 var Logger = require('../index.js');
 

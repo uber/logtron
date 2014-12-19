@@ -341,7 +341,8 @@ logtron := Logger & {
         }
     }, clients?: {
         statsd: StatsdClient,
-        kafkaClient?: KafkaClient
+        kafkaClient?: KafkaClient,
+        isKafkaDisabled?: () => Boolean
     }) => {
         disk: Backend | null,
         kafka: Backend | null,
@@ -419,6 +420,14 @@ If you want to re-use a single `kafkaClient` in your application
   you can pass in an instance of the `uber-nodesol-write` module
   and the logger will re-use this client isntead of creating
   its own kafka client.
+
+#### `clients.isKafkaDisabled`
+
+If you want to be able to disable kafka at run time you can
+  pass an `isKafkaDisabled` predicate function.
+
+If this function returns `true` then `logtron` will stop writing
+  to kafka.
 
 ### Logging Errors
 
@@ -590,7 +599,8 @@ The `Disk` depends on `meta.team` and `meta.project` to be
 logtron/backends/kafka := (options: {
     leafHost: String,
     leafPort: Number,
-    statsd?: Object
+    statsd?: Object,
+    isDisabled: () => Boolean
 }) => {
     createStream: (meta: Object) => WritableStream
 }
@@ -622,6 +632,14 @@ If you pass a `kafkaClient` to the `Kafka` backend it will use
   this to write to kafka instead of creating it's own client.
   You must ensure this is an instance of the `uber-nodesol-write`
   module.
+
+#### `options.isDisabled`
+
+If you want to be able to disable this backend at run time you
+  can pass in a predicate function.
+
+When this predicate function returns `true` the `KafkaBackend`
+  will stop writing to kafka.
 
 ### `var backend = Sentry(options)`
 
