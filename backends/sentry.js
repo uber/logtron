@@ -1,5 +1,5 @@
 var SentryLogger = require('sentry-logger');
-var RavenClient = require('raven').Client;
+var RavenClient = require('uber-raven').Client;
 var zlib = require('zlib');
 var Prober = require('airlock');
 var inherits = require('util').inherits;

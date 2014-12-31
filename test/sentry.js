@@ -13,7 +13,7 @@ test('sentry logging', function (assert) {
     var server = http.createServer(function (req, res) {
         body(req, res, function (err, body) {
             assert.equal(req.method, 'POST');
-            assert.equal(req.url, '/api/store/');
+            assert.equal(req.url, '/api/269/store/');
             assert.ok(req.headers['x-sentry-auth']);
             assert.ok(body.length > 0);
 

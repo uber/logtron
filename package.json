@@ -20,10 +20,10 @@
     "lodash.isfinite": "~2.4.1",
     "mkdirp": "~0.3.5",
     "nodemailer": "~0.5.14",
-    "raven": "^0.6.3",
     "readable-stream": "^1.0.27-1",
     "run-parallel": "^1.0.0",
-    "sentry-logger": "^2.0.1",
+    "sentry-logger": "^2.1.0",
+    "uber-raven": "^0.6.3-project-name",
     "winston": "~0.7.2",
     "xtend": "^3.0.0"
   },
