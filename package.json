@@ -1,6 +1,6 @@
 {
   "name": "logtron",
-  "version": "6.1.0",
+  "version": "6.1.0-fix-sentry",
   "description": "A logging MACHINE",
   "keywords": [],
   "author": "Raynos<raynos2@gmail>",
