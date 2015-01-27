@@ -11,7 +11,7 @@ var defaultBackends = ['disk', 'kafka', 'console'];
 
 var defaultLevels = {
     trace: {
-        backends: ['console'],
+        backends: [],
         level: TRACE
     },
     debug: {
