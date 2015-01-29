@@ -14,6 +14,7 @@ function Logger(opts) {
     if (!(this instanceof Logger)) {
         return new Logger(opts);
     }
+    var self = this;
 
     if (!opts) {
         throw errors.OptsRequired();
@@ -35,7 +36,7 @@ function Logger(opts) {
     transforms.push(serializableErrorTransform);
     transforms.push(writePidAndHost(meta));
 
-    this.streams = Object.keys(opts.backends)
+    var streams = this.streams = Object.keys(opts.backends)
         .reduce(function (acc, backendName) {
             var backend = opts.backends[backendName];
             if (!backend) {
@@ -53,18 +54,29 @@ function Logger(opts) {
     var levels = extend(defaultLevels, opts.levels || {});
     var path = opts.path || "";
 
-    Object.keys(levels)
-        .forEach(function (levelName) {
+    this.streamsByLevel = Object.keys(levels)
+        .reduce(function (streamsByLevel, levelName) {
             if (!levels[levelName]) {
-                return;
+                return streamsByLevel;
             }
 
             var level = levels[levelName];
             level = extend({transforms: []}, level);
             level.transforms = level.transforms.concat(transforms);
 
-            this[levelName] = this.makeLogMethod(levelName, level, path);
-        }, this);
+            self[levelName] = self.makeLogMethod(levelName, level, path);
+
+            streamsByLevel[levelName] = level.backends
+                .reduce(function (levelStreams, backendName) {
+                    if (streams[backendName]) {
+                        levelStreams[backendName] = streams[backendName];
+                    }
+                    return levelStreams;
+                }, {});
+
+            return streamsByLevel;
+        }, {});
+
 }
 
 inherits(Logger, EventEmitter);
@@ -81,19 +93,11 @@ Logger.prototype.destroy = function destroy() {
 };
 
 Logger.prototype.makeLogMethod = function makeLogMethod(levelName, level, path) {
-    var streams = this.streams;
-    var logStreams = level.backends.reduce(function (acc, name) {
-        if (!streams[name]) {
-            return acc;
-        }
-
-        acc[name] = streams[name];
-        return acc;
-    }, {});
 
     return log;
 
     function log(message, meta, callback) {
+        var logStreams = this.streamsByLevel[levelName];
         var logger = this;
         var entry = new Entry(levelName, message, meta, path);
 
