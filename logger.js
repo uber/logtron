@@ -8,6 +8,7 @@ var serializableErrorTransform =
     require('./transforms/serialize-error.js');
 var writePidAndHost = require('./transforms/pid-and-host.js');
 var errors = require('./errors.js');
+var Entry = require('./entry.js');
 
 function Logger(opts) {
     if (!(this instanceof Logger)) {
@@ -50,6 +51,7 @@ function Logger(opts) {
     this.statsd = opts.statsd;
 
     var levels = extend(defaultLevels, opts.levels || {});
+    var path = opts.path || "";
 
     Object.keys(levels)
         .forEach(function (levelName) {
@@ -61,7 +63,7 @@ function Logger(opts) {
             level.transforms = (level.transforms || [])
                 .concat(transforms);
 
-            this[levelName] = logMethod(this, levelName, level);
+            this[levelName] = logMethod(this, levelName, level, path);
         }, this);
 }
 
@@ -82,7 +84,7 @@ Logger.prototype.destroy = function destroy() {
 
 module.exports = Logger;
 
-function logMethod(logger, levelName, level) {
+function logMethod(logger, levelName, level, path) {
     var streams = logger.streams;
     var logStreams = level.backends.reduce(function (acc, name) {
         if (!streams[name]) {
@@ -95,18 +97,18 @@ function logMethod(logger, levelName, level) {
 
     return log;
 
-    function log(message, opts, callback) {
-        var triplet = [levelName, message, opts];
+    function log(message, meta, callback) {
+        var entry = new Entry(levelName, message, meta, path);
 
         if (this.statsd && typeof this.statsd.increment === 'function') {
             this.statsd.increment('logtron.logged.' + levelName);
         }
 
         level.transforms.forEach(function (transform) {
-            triplet = transform(triplet);
+            entry = transform(entry);
         });
 
-        parallelWrite(logStreams, triplet, function (err) {
+        parallelWrite(logStreams, entry, function (err) {
             if (!err) {
                 if (callback) {
                     callback(null);

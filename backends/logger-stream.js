@@ -17,12 +17,11 @@ function LoggerStream(logger, opts, destroyCb) {
 
 inherits(LoggerStream, Writable);
 
-LoggerStream.prototype._write = function write(triplet, enc, cb) {
-    var levelName = triplet[0];
-    var message = triplet[1];
-    var chunk = triplet[2];
-
-    this.logger.log(levelName, message, chunk, cb);
+LoggerStream.prototype._write = function write(entry, enc, cb) {
+    var level = entry.level;
+    var message = entry.message;
+    var meta = entry.meta;
+    this.logger.log(level, message, meta, cb);
 };
 
 LoggerStream.prototype.destroy = function destroy() {

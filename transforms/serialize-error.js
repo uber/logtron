@@ -1,20 +1,21 @@
 var isError = require('core-util-is').isError;
+var Entry = require('../entry.js');
 
 module.exports = serializableError;
 
-function serializableError(triplet) {
-    var opts = triplet[2];
-    if (isError(opts)) {
-        makeSerializable(opts);
-    } else if (typeof opts === 'object' && opts !== null) {
-        Object.keys(opts).forEach(function (k) {
-            if (isError(opts[k])) {
-                makeSerializable(opts[k]);
+function serializableError(entry) {
+    var meta = entry.meta;
+    if (isError(meta)) {
+        makeSerializable(meta);
+    } else if (typeof meta === 'object' && meta !== null) {
+        Object.keys(meta).forEach(function (k) {
+            if (isError(meta[k])) {
+                makeSerializable(meta[k]);
             }
         });
     }
 
-    return [triplet[0], triplet[1], opts];
+    return new Entry(entry.level, entry.message, entry.meta, entry.path);
 }
 
 function makeSerializable(error) {
