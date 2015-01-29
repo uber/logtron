@@ -12,6 +12,7 @@ var SentryServer = require(
 var KafkaServer = require(
     'kafka-logger/test/lib/kafka-server.js');
 
+var defaultLevels = require('../default-levels.js');
 var captureStdio = require('./lib/capture-stdio.js');
 var Logger = require('../index.js');
 
@@ -263,4 +264,9 @@ test('kafka logging', function t(assert) {
         server.close();
         assert.end();
     }
+});
+
+test('default levels have not been altered', function t(assert) {
+    assert.ok(!('transforms' in defaultLevels.trace));
+    assert.end();
 });
