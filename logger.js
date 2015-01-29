@@ -63,15 +63,13 @@ function Logger(opts) {
             level = extend({transforms: []}, level);
             level.transforms = level.transforms.concat(transforms);
 
-            this[levelName] = logMethod(this, levelName, level, path);
+            this[levelName] = this.makeLogMethod(levelName, level, path);
         }, this);
 }
 
 inherits(Logger, EventEmitter);
 
-Logger.prototype.instrument = function instrument() {
-
-};
+Logger.prototype.instrument = function instrument() { };
 
 Logger.prototype.destroy = function destroy() {
     Object.keys(this.streams).forEach(function (name) {
@@ -82,10 +80,8 @@ Logger.prototype.destroy = function destroy() {
     }, this);
 };
 
-module.exports = Logger;
-
-function logMethod(logger, levelName, level, path) {
-    var streams = logger.streams;
+Logger.prototype.makeLogMethod = function makeLogMethod(levelName, level, path) {
+    var streams = this.streams;
     var logStreams = level.backends.reduce(function (acc, name) {
         if (!streams[name]) {
             return acc;
@@ -98,6 +94,7 @@ function logMethod(logger, levelName, level, path) {
     return log;
 
     function log(message, meta, callback) {
+        var logger = this;
         var entry = new Entry(levelName, message, meta, path);
 
         if (this.statsd && typeof this.statsd.increment === 'function') {
@@ -123,4 +120,6 @@ function logMethod(logger, levelName, level, path) {
             logger.emit('error', err);
         });
     }
-}
+};
+
+module.exports = Logger;
