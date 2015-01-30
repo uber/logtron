@@ -21,7 +21,7 @@ ChildLogger.prototype.log = function (entry, callback) {
 ChildLogger.prototype.createChild = function (subPath, levels) {
     return new this.ChildLogger({
         target: this.target,
-        path: this.path + "/" + subPath,
+        path: this.path + "." + subPath,
         levels: levels
     });
 };

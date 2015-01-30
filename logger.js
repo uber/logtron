@@ -53,7 +53,7 @@ function Logger(opts) {
     this.statsd = opts.statsd;
 
     var levels = this.levels = extend(defaultLevels, opts.levels || {});
-    this.path = opts.path || "/";
+    this.path = opts.path = "";
 
     this.streamsByLevel = Object.keys(levels)
         .reduce(function (streamsByLevel, levelName) {
@@ -127,7 +127,7 @@ Logger.prototype.log = function log(entry, callback) {
 Logger.prototype.createChild = function (subPath, levels) {
     return new this.ChildLogger({
         target: this,
-        path: this.path + subPath,
+        path: subPath,
         levels: levels
     });
 };

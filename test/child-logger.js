@@ -21,7 +21,7 @@ function createLogger() {
 function pathPrefixTransform(entry) {
     return new entry.constructor(
         entry.level,
-        entry.path + ': ' + entry.message,
+        (entry.path ? entry.path + ': ' : '') + entry.message,
         entry.meta,
         entry.path
     );
@@ -30,7 +30,7 @@ function pathPrefixTransform(entry) {
 test('root logger paths', function (assert) {
     var logger = createLogger();
 
-    assert.ok(captureStdio('info: /: hello who=world', function () {
+    assert.ok(captureStdio('info: hello who=world', function () {
         logger.info('hello', { who: 'world' });
     }));
 
@@ -41,7 +41,7 @@ test('child logger path', function (assert) {
     var logger = createLogger();
     var childLogger = logger.createChild('child', {info: true});
 
-    assert.ok(captureStdio('info: /child: hello who=world', function () {
+    assert.ok(captureStdio('info: child: hello who=world', function () {
         childLogger.info('hello', { who: 'world' });
     }));
 
@@ -53,7 +53,7 @@ test('child logger path', function (assert) {
     var childLogger = logger.createChild('child');
     var grandchildLogger = childLogger.createChild('child');
 
-    assert.ok(captureStdio('info: /child/child: hello who=world', function () {
+    assert.ok(captureStdio('info: child.child: hello who=world', function () {
         grandchildLogger.info('hello', { who: 'world' });
     }));
 
