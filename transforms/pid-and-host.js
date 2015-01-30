@@ -1,19 +1,23 @@
+'use strict';
+
+var Entry = require('../entry.js');
+
 module.exports = AddPidAndHost;
 
-function AddPidAndHost(meta) {
+function AddPidAndHost(baseMeta) {
     return addPidAndHost;
 
-    function addPidAndHost(triplet) {
-        var opts = triplet[2] || {};
+    function addPidAndHost(entry) {
+        var meta = entry.meta || {};
 
-        if (!opts._hostname && meta.hostname) {
-            opts._hostname = meta.hostname;
+        if (!meta._hostname && baseMeta.hostname) {
+            meta._hostname = baseMeta.hostname;
         }
 
-        if (!opts._pid && meta.pid) {
-            opts._pid = meta.pid;
+        if (!meta._pid && baseMeta.pid) {
+            meta._pid = baseMeta.pid;
         }
 
-        return [triplet[0], triplet[1], opts];
+        return new Entry(entry.level, entry.message, entry.meta, entry.path);
     }
 }

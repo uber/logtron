@@ -1,15 +1,14 @@
 var extend = require('xtend');
+var Entry = require('../entry.js');
 
 module.exports = XtendTransform;
 
-function XtendTransform(meta) {
+function XtendTransform(baseMeta) {
     return xtendTransform;
 
-    function xtendTransform(triplet) {
-        var opts = triplet[2] || {};
-
-        opts = extend(meta, opts);
-
-        return [triplet[0], triplet[1], opts];
+    function xtendTransform(entry) {
+        var meta = entry.meta || {};
+        meta = extend(baseMeta, meta);
+        return new Entry(entry.level, entry.message, meta, entry.path);
     }
 }
