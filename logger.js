@@ -51,8 +51,8 @@ function Logger(opts) {
 
     this.statsd = opts.statsd;
 
-    var levels = extend(defaultLevels, opts.levels || {});
-    var path = opts.path || "";
+    var levels = this.levels = extend(defaultLevels, opts.levels || {});
+    this.path = opts.path || "";
 
     this.streamsByLevel = Object.keys(levels)
         .reduce(function (streamsByLevel, levelName) {
@@ -62,9 +62,11 @@ function Logger(opts) {
 
             var level = levels[levelName];
             level = extend({transforms: []}, level);
+            levels[levelName] = level;
+
             level.transforms = level.transforms.concat(transforms);
 
-            self[levelName] = self.makeLogMethod(levelName, level, path);
+            self[levelName] = self.makeLogMethod(levelName);
 
             streamsByLevel[levelName] = level.backends
                 .reduce(function (levelStreams, backendName) {
@@ -92,37 +94,42 @@ Logger.prototype.destroy = function destroy() {
     }, this);
 };
 
-Logger.prototype.makeLogMethod = function makeLogMethod(levelName, level, path) {
+Logger.prototype.log = function log(entry, callback) {
+    var levelName = entry.level;
+    var level = this.levels[levelName];
+    var logStreams = this.streamsByLevel[levelName];
+    var logger = this;
+    if (this.statsd && typeof this.statsd.increment === 'function') {
+        this.statsd.increment('logtron.logged.' + levelName);
+    }
 
+    level.transforms.forEach(function (transform) {
+        entry = transform(entry);
+    });
+
+    parallelWrite(logStreams, entry, function (err) {
+        if (!err) {
+            if (callback) {
+                callback(null);
+            }
+            return;
+        }
+
+        if (callback && typeof callback === 'function') {
+            return callback(err);
+        }
+
+        logger.emit('error', err);
+    });
+};
+
+Logger.prototype.makeLogMethod = function makeLogMethod(levelName) {
     return log;
 
     function log(message, meta, callback) {
-        var logStreams = this.streamsByLevel[levelName];
-        var logger = this;
-        var entry = new Entry(levelName, message, meta, path);
+        var entry = new Entry(levelName, message, meta, this.path);
+        this.log(entry, callback);
 
-        if (this.statsd && typeof this.statsd.increment === 'function') {
-            this.statsd.increment('logtron.logged.' + levelName);
-        }
-
-        level.transforms.forEach(function (transform) {
-            entry = transform(entry);
-        });
-
-        parallelWrite(logStreams, entry, function (err) {
-            if (!err) {
-                if (callback) {
-                    callback(null);
-                }
-                return;
-            }
-
-            if (callback && typeof callback === 'function') {
-                return callback(err);
-            }
-
-            logger.emit('error', err);
-        });
     }
 };
 
