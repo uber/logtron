@@ -58,8 +58,8 @@ function Logger(opts) {
             }
 
             var level = levels[levelName];
-            level.transforms = (level.transforms || [])
-                .concat(transforms);
+            level = extend({transforms: []}, level);
+            level.transforms = level.transforms.concat(transforms);
 
             this[levelName] = logMethod(this, levelName, level);
         }, this);
