@@ -38,7 +38,7 @@ function Logger(opts) {
     transforms.push(writePidAndHost(meta));
 
     var streams = this.streams = Object.keys(opts.backends)
-        .reduce(function (acc, backendName) {
+        .reduce(function accumulateStreams(acc, backendName) {
             var backend = opts.backends[backendName];
             if (!backend) {
                 return acc;
@@ -55,10 +55,10 @@ function Logger(opts) {
     var levels = this.levels = extend(defaultLevels, opts.levels || {});
     this.path = opts.path = "";
 
-    this.streamsByLevel = Object.keys(levels)
-        .reduce(function (streamsByLevel, levelName) {
+    Object.keys(levels)
+        .forEach(function makeMethodForLevel(levelName) {
             if (!levels[levelName]) {
-                return streamsByLevel;
+                return;
             }
 
             var level = levels[levelName];
@@ -68,9 +68,20 @@ function Logger(opts) {
             level.transforms = level.transforms.concat(transforms);
 
             self[levelName] = self.makeLogMethod(levelName);
+        }, {});
 
+    this._streamsByLevel = Object.keys(levels)
+        .reduce(function accumulateStreamsByLevel(streamsByLevel, levelName) {
+            if (!levels[levelName]) {
+                return streamsByLevel;
+            }
+
+            var level = levels[levelName];
             streamsByLevel[levelName] = level.backends
-                .reduce(function (levelStreams, backendName) {
+                .reduce(function accumulateStreamsByBackend(
+                    levelStreams,
+                    backendName
+                ) {
                     if (streams[backendName]) {
                         levelStreams[backendName] = streams[backendName];
                     }
@@ -79,7 +90,6 @@ function Logger(opts) {
 
             return streamsByLevel;
         }, {});
-
 }
 
 inherits(Logger, EventEmitter);
@@ -87,7 +97,7 @@ inherits(Logger, EventEmitter);
 Logger.prototype.instrument = function instrument() { };
 
 Logger.prototype.destroy = function destroy() {
-    Object.keys(this.streams).forEach(function (name) {
+    Object.keys(this.streams).forEach(function destroyStreamForLevel(name) {
         var stream = this.streams[name];
         if (stream && stream.destroy) {
             stream.destroy();
@@ -95,10 +105,10 @@ Logger.prototype.destroy = function destroy() {
     }, this);
 };
 
-Logger.prototype.log = function log(entry, callback) {
+Logger.prototype.writeEntry = function writeEntry(entry, callback) {
     var levelName = entry.level;
     var level = this.levels[levelName];
-    var logStreams = this.streamsByLevel[levelName];
+    var logStreams = this._streamsByLevel[levelName];
     var logger = this;
     if (this.statsd && typeof this.statsd.increment === 'function') {
         this.statsd.increment('logtron.logged.' + levelName);
@@ -124,9 +134,9 @@ Logger.prototype.log = function log(entry, callback) {
     });
 };
 
-Logger.prototype.createChild = function (subPath, levels) {
+Logger.prototype.createChild = function createChild(subPath, levels) {
     return new this.ChildLogger({
-        target: this,
+        mainLogger: this,
         path: subPath,
         levels: levels
     });
