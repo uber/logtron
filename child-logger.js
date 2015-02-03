@@ -23,12 +23,6 @@ ChildLogger.prototype.writeEntry = function writeEntry(entry, callback) {
 };
 
 ChildLogger.prototype.createChild = function createChild(subPath, levels) {
-    return new ChildLogger({
-        mainLogger: this.mainLogger,
-        path: this.path + "." + subPath,
-        levels: levels
-    });
+    return this.mainLogger.createChild(this.path + '.' + subPath, levels);
 };
-
-ChildLogger.prototype.ChildLogger = ChildLogger;
 

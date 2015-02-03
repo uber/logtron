@@ -1,5 +1,7 @@
 var TypedError = require('error/typed');
 
+// The following errors predate the transition from rt-logger to
+// logtron and for backward compatibility retain their old names.
 var OptsRequired = TypedError({
     message: 'rt-logger: Must call Logger with opts argument.\n' +
         'Ensure you call `Logger({ ... })`.\n',
@@ -17,15 +19,23 @@ var BackendsRequired = TypedError({
         'on opts.\n' +
         'Ensure you call `Logger({ backends: ... })`.\n'
 });
+
+// The following have been added since the transition to logtron.
 var LevelRequired = TypedError({
-    type: 'rt-logger.child-logger-requires-additional-level',
-    message: 'rt-logger: Logger must configure at least one ' +
+    type: 'logtron.child-logger.additional-level.required',
+    message: 'logtron: Logger must configure at least one ' +
         'backend to store log level {level} produced by child logger.\n'
+});
+var UniquePathRequired = TypedError({
+    type: 'logtron.child-logger.unique-path.required',
+    message: 'logtron: Child logger must be constructed with ' +
+        'a unique path\n. {path} has already been used.\n'
 });
 
 module.exports = {
     OptsRequired: OptsRequired,
     MetaRequired: MetaRequired,
     BackendsRequired: BackendsRequired,
-    LevelRequired: LevelRequired
+    LevelRequired: LevelRequired,
+    UniquePathRequired: UniquePathRequired
 };

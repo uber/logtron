@@ -37,39 +37,56 @@ function Logger(opts) {
     transforms.push(serializableErrorTransform);
     transforms.push(writePidAndHost(meta));
 
-    var streams = this.streams = Object.keys(opts.backends)
-        .reduce(function accumulateStreams(acc, backendName) {
-            var backend = opts.backends[backendName];
-            if (!backend) {
-                return acc;
-            }
-
-            acc[backendName] = backend.createStream(meta, {
-                highWaterMark: opts.highWaterMark || 1000
-            });
-            return acc;
-        }, {});
-
     this.statsd = opts.statsd;
 
-    var levels = this.levels = extend(defaultLevels, opts.levels || {});
     this.path = opts.path = "";
 
-    Object.keys(levels)
-        .forEach(function makeMethodForLevel(levelName) {
-            if (!levels[levelName]) {
+    // Performs a deep copy of the default log levels, overlaying the
+    // configured levels and filtering nulled levels.
+    var levels = this.levels = {};
+    var configuredLevels = extend(defaultLevels, opts.levels || {});
+    Object.keys(configuredLevels)
+        .forEach(function copyDefaultLevel(levelName) {
+            // Setting a level in opts.levels to null disables that level.
+            if (!configuredLevels[levelName]) {
                 return;
             }
-
-            var level = levels[levelName];
-            level = extend({transforms: []}, level);
-            levels[levelName] = level;
-
+            // Each log level will contain an array of transforms by default,
+            // that will be suffixed with globally configured transforms.
+            var level = extend({transforms: []}, configuredLevels[levelName]);
             level.transforms = level.transforms.concat(transforms);
+            levels[levelName] = level;
+        });
 
+    // Create a log level method, e.g., info(message, meta, cb?), for every
+    // configured log level.
+    Object.keys(levels)
+        .forEach(function makeMethodForLevel(levelName) {
             self[levelName] = makeLogMethod(levelName);
+        });
+
+    // Create a stream for each of the configured backends, indexed by backend
+    // name.
+    // streams: Object<backendName, Stream>
+    var streams = this.streams = Object.keys(opts.backends)
+        .reduce(function accumulateStreams(streamByBackend, backendName) {
+            var backend = opts.backends[backendName];
+            if (!backend) {
+                return streamByBackend;
+            }
+
+            streamByBackend[backendName] = backend.createStream(meta, {
+                highWaterMark: opts.highWaterMark || 1000
+            });
+            return streamByBackend;
         }, {});
 
+    // Creates an index of all the streams that each log level will write to,
+    // keyed by both log level and backend name.
+    // The index is used by the writeEntry method to look up all the target
+    // streams for the given level.
+    // The parallel write method uses the backend name to annotate errors.
+    // _streamsByLevel: Object<logLevel, Object<backendName, Stream>>
     this._streamsByLevel = Object.keys(levels)
         .reduce(function accumulateStreamsByLevel(streamsByLevel, levelName) {
             if (!levels[levelName]) {
@@ -77,6 +94,7 @@ function Logger(opts) {
             }
 
             var level = levels[levelName];
+
             streamsByLevel[levelName] = level.backends
                 .reduce(function accumulateStreamsByBackend(
                     levelStreams,
@@ -90,6 +108,10 @@ function Logger(opts) {
 
             return streamsByLevel;
         }, {});
+
+    // This is an index of all the paths used by child loggers, so no
+    // child logger can be created twice for the same path.
+    this.paths = {};
 }
 
 inherits(Logger, EventEmitter);
@@ -134,10 +156,17 @@ Logger.prototype.writeEntry = function writeEntry(entry, callback) {
     });
 };
 
-Logger.prototype.createChild = function createChild(subPath, levels) {
+Logger.prototype.createChild = function createChild(path, levels) {
+    if (this.paths.hasOwnProperty(path)) {
+        throw errors.UniquePathRequired({
+            path: path,
+            paths: Object.keys(this.paths)
+        });
+    }
+    this.paths[path] = true;
     return new ChildLogger({
         mainLogger: this,
-        path: subPath,
+        path: path,
         levels: levels
     });
 };

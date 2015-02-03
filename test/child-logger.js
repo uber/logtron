@@ -27,36 +27,58 @@ function pathPrefixTransform(entry) {
     );
 }
 
-test('root logger paths', function (assert) {
+test('root logger paths', function t(assert) {
     var logger = createLogger();
 
-    assert.ok(captureStdio('info: hello who=world', function () {
+    assert.ok(captureStdio('info: hello who=world', function capture() {
         logger.info('hello', { who: 'world' });
     }));
 
     assert.end();
 });
 
-test('child logger path', function (assert) {
+test('child logger path', function t(assert) {
     var logger = createLogger();
     var childLogger = logger.createChild('child', {info: true});
 
-    assert.ok(captureStdio('info: child: hello who=world', function () {
+    assert.ok(captureStdio('info: child: hello who=world', function t() {
         childLogger.info('hello', { who: 'world' });
     }));
 
     assert.end();
 });
 
-test('child logger path', function (assert) {
+test('child logger path', function t(assert) {
     var logger = createLogger();
     var childLogger = logger.createChild('child');
     var grandchildLogger = childLogger.createChild('child');
 
-    assert.ok(captureStdio('info: child.child: hello who=world', function () {
+    assert.ok(captureStdio('info: child.child: hello who=world', function t() {
         grandchildLogger.info('hello', { who: 'world' });
     }));
 
     assert.end();
 });
 
+test('child logger can not be constructed ' +
+    'with duplicate path', function t(assert) {
+
+    var logger = createLogger();
+    logger.createChild('child');
+    assert.throws(function () {
+        logger.createChild('child');
+    });
+    assert.end();
+});
+
+test('child logger can not be constructed ' +
+    'with duplicate path indirectly', function t(assert) {
+
+    var logger = createLogger();
+    logger.createChild('child.child');
+    var child = logger.createChild('child');
+    assert.throws(function () {
+        child.createChild('child');
+    });
+    assert.end();
+});
