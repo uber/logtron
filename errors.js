@@ -17,9 +17,15 @@ var BackendsRequired = TypedError({
         'on opts.\n' +
         'Ensure you call `Logger({ backends: ... })`.\n'
 });
+var LevelRequired = TypedError({
+    type: 'rt-logger.child-logger-requires-additional-level',
+    message: 'rt-logger: Logger must configure at least one ' +
+        'backend to store log level {level} produced by child logger.\n'
+});
 
 module.exports = {
     OptsRequired: OptsRequired,
     MetaRequired: MetaRequired,
-    BackendsRequired: BackendsRequired
+    BackendsRequired: BackendsRequired,
+    LevelRequired: LevelRequired
 };

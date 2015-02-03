@@ -2,15 +2,23 @@ type StatsdClient : Object
 type KafkaClient : Object
 
 type Logger := EventEmitter & {
-    trace: (String, Object, cb?: Callback) => void,
-    debug: (String, Object, cb?: Callback) => void,
-    info: (String, Object, cb?: Callback) => void,
-    access?: (String, Object, cb?: Callback) => void,
-    warn: (String, Object, cb?: Callback) => void,
-    error: (String, Object, cb?: Callback) => void,
-    fatal: (String, Object, cb?: Callback) => void,
+    writeEntry: (
+        level: String,
+        message: String,
+        meta: Object,
+        cb?: Callback
+    ) => void,
+    trace: (message: String, meta: Object, cb? Callback) => void,
+    debug: (message: String, meta: Object, cb? Callback) => void,
+    info: (message: String, meta: Object, cb? Callback) => void,
+    access?: (message: String, meta: Object, cb? Callback) => void,
+    warn: (message: String, meta: Object, cb? Callback) => void,
+    error: (message: String, meta: Object, cb? Callback) => void,
+    fatal: (message: String, meta: Object, cb? Callback) => void,
     instrument: (server?: HttpServer, opts?: Object) => void,
-    destroy: () => void
+    destroy: ({
+        createStream: (meta: Object) => WritableStream
+    }) => void
 }
 
 type BackendName := String

@@ -81,12 +81,19 @@ logtron/logger := ({
     backends: Object<backendName: String, Backend>,
     transforms?: Array<Function>
 }) => logger: {
-    trace: (String, Object, cb?: Callback) => void,
-    debug: (String, Object, cb?: Callback) => void,
-    info: (String, Object, cb?: Callback) => void,
-    warn: (String, Object, cb?: Callback) => void,
-    error: (String, Object, cb?: Callback) => void,
-    fatal: (String, Object, cb?: Callback) => void,
+    writeEntry: (
+        level: String,
+        message: String,
+        meta: Object,
+        cb?: Callback
+    ) => void,
+    trace: (message: String, meta: Object, cb? Callback) => void,
+    debug: (message: String, meta: Object, cb? Callback) => void,
+    info: (message: String, meta: Object, cb? Callback) => void,
+    warn: (message: String, meta: Object, cb? Callback) => void,
+    error: (message: String, meta: Object, cb? Callback) => void,
+    fatal: (message: String, meta: Object, cb? Callback) => void,
+    instrument: (server?: HttpServer, opts?: Object) => void,
     destroy: ({
         createStream: (meta: Object) => WritableStream
     }) => void
@@ -317,6 +324,18 @@ It's expected that shutdown the process once you have verified
   that the `fatal()` error message has been logged. You can
   do either a hard or soft shutdown.
 
+#### `logger.createChild({path, levels?})`
+
+The `createChild` method returns a Logger that will create entries at a
+  nested path. Child loggers can be nested within other child loggers
+  to construct deeper dot delimited paths. Child loggers implement
+  log level methods for every key in the given levels, or the default levels.
+
+#### `logger.writeEntry(level, message, information, callback?)`
+
+All of the log level methods internally create an `Entry` and use the
+  `writeEntry` method to send it into routing.  Child loggers use this method
+  directly to forward arbitrary entries to the root level logger.
 
 ### `var backends = Logger.defaultBackends(options, clients)`
 

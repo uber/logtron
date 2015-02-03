@@ -8,8 +8,8 @@ var serializableErrorTransform =
     require('./transforms/serialize-error.js');
 var writePidAndHost = require('./transforms/pid-and-host.js');
 var errors = require('./errors.js');
-var Entry = require('./entry.js');
-var ChildLogger = require('./child-logger.js');
+var makeLogMethod = require('./log-method');
+var ChildLogger = require('./child-logger');
 
 function Logger(opts) {
     if (!(this instanceof Logger)) {
@@ -67,7 +67,7 @@ function Logger(opts) {
 
             level.transforms = level.transforms.concat(transforms);
 
-            self[levelName] = self.makeLogMethod(levelName);
+            self[levelName] = makeLogMethod(levelName);
         }, {});
 
     this._streamsByLevel = Object.keys(levels)
@@ -135,15 +135,11 @@ Logger.prototype.writeEntry = function writeEntry(entry, callback) {
 };
 
 Logger.prototype.createChild = function createChild(subPath, levels) {
-    return new this.ChildLogger({
+    return new ChildLogger({
         mainLogger: this,
         path: subPath,
         levels: levels
     });
 };
-
-Logger.prototype.makeLogMethod = ChildLogger.prototype.makeLogMethod;
-Logger.prototype.Entry = Entry; // used by log methods
-Logger.prototype.ChildLogger = ChildLogger; // used by createChild
 
 module.exports = Logger;
