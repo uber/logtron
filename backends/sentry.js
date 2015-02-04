@@ -76,7 +76,9 @@ SentryBackend.prototype.createStream =
 module.exports = SentryBackend;
 
 function computeErrLoc(msg) {
-    var MAGIC_LINE_NUMBER_OFFSET = 13;
+    // This is the number of stack frames that exist between us and
+    // where the logging program called into logtron.
+    var MAGIC_LINE_NUMBER_OFFSET = 14;
 
     var error = new Error(msg);
     var lines = error.stack.split('\n');

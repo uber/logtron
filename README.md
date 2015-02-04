@@ -71,25 +71,52 @@ type Backend := {
     createStream: (meta: Object) => WritableStream
 }
 
-logtron/logger := ({
-    meta: {
-        team: String,
-        project: String,
-        hostname: String,
-        pid: Number
-    },
-    backends: Object<backendName: String, Backend>,
-    transforms?: Array<Function>
-}) => logger: {
-    trace: (String, Object, cb?: Callback) => void,
-    debug: (String, Object, cb?: Callback) => void,
-    info: (String, Object, cb?: Callback) => void,
-    warn: (String, Object, cb?: Callback) => void,
-    error: (String, Object, cb?: Callback) => void,
-    fatal: (String, Object, cb?: Callback) => void,
+type Entry := {
+    level: String,
+    message: String,
+    meta: Object,
+    path: String
+}
+
+type Logger := {
+    trace: (message: String, meta: Object, cb? Callback) => void,
+    debug: (message: String, meta: Object, cb? Callback) => void,
+    info: (message: String, meta: Object, cb? Callback) => void,
+    access?: (message: String, meta: Object, cb? Callback) => void,
+    warn: (message: String, meta: Object, cb? Callback) => void,
+    error: (message: String, meta: Object, cb? Callback) => void,
+    fatal: (message: String, meta: Object, cb? Callback) => void,
+    writeEntry: (Entry, cb?: Callback) => void,
+    createChild: (path: String, Object<levelName: String>) => Logger
+}
+
+type LogtronLogger := EventEmitter & Logger & {
+    instrument: (server?: HttpServer, opts?: Object) => void,
     destroy: ({
         createStream: (meta: Object) => WritableStream
     }) => void
+}
+
+logtron/logger := (LoggerOpts) => LogtronLogger & {
+    defaultBackends: (config: {
+        logFolder?: String,
+        kafka?: {
+            leafHost: String,
+            leafPort: Number
+        },
+        console?: Boolean,
+        sentry?: {
+            id: String
+        }
+    }, clients?: {
+        statsd: StatsdClient,
+        kafkaClient?: KafkaClient
+    }) => {
+        disk: Backend | null,
+        kafka: Backend | null,
+        console: Backend | null,
+        sentry: Backend | null
+    }
 }
 ```
 
@@ -97,8 +124,8 @@ logtron/logger := ({
   will be used by each backend to customize the log formatting
   and a set of backends that you want to be able to write to.
 
-`Logger` returns a logger object that's very similar to
-  `console` but with a few extra methods.
+`Logger` returns a logger object that has some method names
+  in common with `console`.
 
 #### `options.meta.name`
 
@@ -317,6 +344,45 @@ It's expected that shutdown the process once you have verified
   that the `fatal()` error message has been logged. You can
   do either a hard or soft shutdown.
 
+#### `logger.createChild({path: String, levels?})`
+
+The `createChild` method returns a Logger that will create entries at a
+  nested path.
+
+Paths are lower-case and dot.delimited.
+  Child loggers can be nested within other child loggers to
+  construct deeper paths.
+
+Child loggers implement log level methods for every key in
+  the given levels, or the default levels. The levels must
+  be given as an object, and the values are not important
+  for the use of `createChild`, but `true` will suffice if
+  there isn't an object laying around with the keys you
+  need.
+
+```js
+logger.createChild("supervisor", {
+    info: true,
+    warn: true,
+    log: true,
+    trace: true
+})
+```
+
+#### `logger.writeEntry(Entry, callback?)`
+
+All of the log level methods internally create an `Entry` and use the
+  `writeEntry` method to send it into routing.  Child loggers use this method
+  directly to forward arbitrary entries to the root level logger.
+
+```ocaml
+type Entry := {
+    level: String,
+    message: String,
+    meta: Object,
+    path: String
+}
+```
 
 ### `var backends = Logger.defaultBackends(options, clients)`
 

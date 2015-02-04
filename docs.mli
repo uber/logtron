@@ -1,16 +1,30 @@
 type StatsdClient : Object
 type KafkaClient : Object
 
-type Logger := EventEmitter & {
-    trace: (String, Object, cb?: Callback) => void,
-    debug: (String, Object, cb?: Callback) => void,
-    info: (String, Object, cb?: Callback) => void,
-    access?: (String, Object, cb?: Callback) => void,
-    warn: (String, Object, cb?: Callback) => void,
-    error: (String, Object, cb?: Callback) => void,
-    fatal: (String, Object, cb?: Callback) => void,
+type LogtronLogger := EventEmitter & Logger & {
     instrument: (server?: HttpServer, opts?: Object) => void,
-    destroy: () => void
+    destroy: ({
+        createStream: (meta: Object) => WritableStream
+    }) => void
+}
+
+type Logger := {
+    trace: (message: String, meta: Object, cb? Callback) => void,
+    debug: (message: String, meta: Object, cb? Callback) => void,
+    info: (message: String, meta: Object, cb? Callback) => void,
+    access?: (message: String, meta: Object, cb? Callback) => void,
+    warn: (message: String, meta: Object, cb? Callback) => void,
+    error: (message: String, meta: Object, cb? Callback) => void,
+    fatal: (message: String, meta: Object, cb? Callback) => void,
+    writeEntry: (Entry, cb?: Callback) => void,
+    createChild: (path: String, Object<levelName: String>) => Logger
+}
+
+type Entry := {
+    level: String,
+    message: String,
+    meta: Object,
+    path: String
 }
 
 type BackendName := String
@@ -46,26 +60,26 @@ type LoggerOpts := {
     }>
 }
 
-rt-logger/backends/disk := ({
+logtron/backends/disk := ({
     folder: String
 }) => Backend
 
-rt-logger/backends/kafka := ({
+logtron/backends/kafka := ({
     leafHost?: String,
     leafPort?: Number,
     properties?: Object,
     statsd?: Object
 }) => Backend
 
-rt-logger/backends/console := () => Backend
+logtron/backends/console := () => Backend
 
-rt-logger/backends/sentry := ({
+logtron/backends/sentry := ({
     dsn: String,
     defaultTags?: Object,
     statsd?: Object
 }) => Backend
 
-rt-logger/logger := (LoggerOpts) => Logger & {
+logtron/logger := (LoggerOpts) => LogtronLogger & {
     defaultBackends: (config: {
         logFolder?: String,
         kafka?: {
