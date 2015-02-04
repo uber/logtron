@@ -97,7 +97,7 @@ type LogtronLogger := EventEmitter & Logger & {
     }) => void
 }
 
-logtron/logger := (LoggerOpts) => LogtronLogger & {
+logtron/logger := ((LoggerOpts) => LogtronLogger) & {
     defaultBackends: (config: {
         logFolder?: String,
         kafka?: {

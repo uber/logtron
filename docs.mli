@@ -79,7 +79,7 @@ logtron/backends/sentry := ({
     statsd?: Object
 }) => Backend
 
-logtron/logger := (LoggerOpts) => LogtronLogger & {
+logtron/logger := ((LoggerOpts) => LogtronLogger) & {
     defaultBackends: (config: {
         logFolder?: String,
         kafka?: {
