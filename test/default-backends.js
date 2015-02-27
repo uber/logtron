@@ -258,7 +258,7 @@ test('kafka logging', function t(assert) {
         var payload = message.messages[0].payload;
 
         assert.equal(payload.level, 'info');
-        assert.equal(payload.msg, 'hello {}');
+        assert.equal(payload.msg, 'hello');
 
         logger.destroy();
         server.close();

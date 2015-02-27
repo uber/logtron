@@ -6,6 +6,8 @@ var parallelWrite = require('./lib/parallel-write.js');
 var defaultLevels = require('./default-levels.js');
 var serializableErrorTransform =
     require('./transforms/serialize-error.js');
+var safeSerializeMeta =
+    require('./transforms/safe-serialize-meta.js');
 var writePidAndHost = require('./transforms/pid-and-host.js');
 var errors = require('./errors.js');
 var makeLogMethod = require('./log-method');
@@ -34,6 +36,7 @@ function Logger(opts) {
     var meta = opts.meta;
     var transforms = opts.transforms || [];
 
+    transforms.push(safeSerializeMeta);
     transforms.push(serializableErrorTransform);
     transforms.push(writePidAndHost(meta));
 

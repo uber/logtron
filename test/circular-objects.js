@@ -92,7 +92,6 @@ test('writing a circular object (kafka)', function t(assert) {
     }
 });
 
-
 function allocCircularLol() {
     var circular = {};
     circular.lol = 'lol';

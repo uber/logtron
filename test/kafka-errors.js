@@ -10,8 +10,8 @@ test('can .error("message", new Error())', function (assert) {
 
         assert.notEqual(obj.msg.indexOf('hello'), -1);
         assert.notEqual(
-            obj.msg.indexOf('"stack":"Error: lulz'), -1);
-        assert.notEqual(obj.msg.indexOf('"message":"lulz"'), -1);
+            obj.fields.stack.indexOf('Error: lulz'), -1);
+        assert.equal(obj.fields.message, 'lulz');
 
         logger.destroy();
         assert.end();
@@ -26,10 +26,9 @@ test('can error("message", { error: Error() })', function (assert) {
 
         assert.notEqual(obj.msg.indexOf('some message'), -1);
         assert.notEqual(
-            obj.msg.indexOf('"stack":"Error: some error'), -1);
-        assert.notEqual(
-            obj.msg.indexOf('"message":"some error"'), -1);
-        assert.notEqual(obj.msg.indexOf('"other":"key"'), -1);
+            obj.fields.error.stack.indexOf('Error: some error'), -1);
+        assert.equal(obj.fields.error.message, 'some error');
+        assert.equal(obj.fields.other, 'key');
 
         logger.destroy();
         assert.end();
@@ -47,10 +46,9 @@ test('can error(msg, { someKey: Error() })', function (assert) {
 
         assert.notEqual(obj.msg.indexOf('some message'), -1);
         assert.notEqual(
-            obj.msg.indexOf('"stack":"Error: some error'), -1);
-        assert.notEqual(
-            obj.msg.indexOf('"message":"some error"'), -1);
-        assert.notEqual(obj.msg.indexOf('"other":"key"'), -1);
+            obj.fields.someKey.stack.indexOf('Error: some error'), -1);
+        assert.equal(obj.fields.someKey.message, 'some error');
+        assert.equal(obj.fields.other, 'key');
 
         logger.destroy();
         assert.end();
