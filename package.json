@@ -1,6 +1,6 @@
 {
   "name": "logtron",
-  "version": "7.0.0-node0.12-2",
+  "version": "7.1.0",
   "description": "A logging MACHINE",
   "keywords": [],
   "author": "Raynos<raynos2@gmail>",
