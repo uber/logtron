@@ -51,7 +51,8 @@ function defaultBackends(config, clients) {
     return {
         _isDefaultBackends: true,
         disk: config.logFolder ? Disk({
-            folder: config.logFolder
+            folder: config.logFolder,
+            json: config.json || false
         }) : null,
         kafka: config.kafka ? Kafka({
             leafHost: config.kafka.leafHost,
@@ -60,7 +61,9 @@ function defaultBackends(config, clients) {
             statsd: clients.statsd,
             kafkaClient: clients.kafkaClient
         }) : null,
-        console: config.console ? Console() : null,
+        console: config.console ? Console({
+            raw: config.raw || false
+        }) : null,
         sentry: config.sentry ? Sentry({
             dsn: config.sentry.id,
             statsd: clients.statsd

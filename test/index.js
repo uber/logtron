@@ -25,6 +25,8 @@ require('./access.js');
 require('./leaky-backend-master.js');
 require('./kafka-is-disabled.js');
 require('./child-logger.js');
+require('./buffer-objects.js');
+require('./raw-logger.js');
 
 test('removing levels', function t(assert) {
     var logger = Logger({

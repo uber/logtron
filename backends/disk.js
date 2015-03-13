@@ -17,6 +17,7 @@ function DiskBackend(opts) {
     EventEmitter.call(this);
 
     this.folder = opts.folder;
+    this.json = opts.json || false;
 }
 
 inherits(DiskBackend, EventEmitter);
@@ -27,7 +28,7 @@ DiskBackend.prototype.createStream =
         var logger = new DailyRotateFile({
             filename: path.join(this.folder, fileName),
             datePattern: '-yyyyMMdd',
-            json: false
+            json: this.json
         });
 
         return LoggerStream(logger, {
