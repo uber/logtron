@@ -85,11 +85,11 @@ function Logger(opts) {
         }, {});
 
     // Creates an index of all the streams that each log level will write to,
-    // keyed by both log level and backend name.
+    // keyed by log level.
     // The index is used by the writeEntry method to look up all the target
     // streams for the given level.
     // The parallel write method uses the backend name to annotate errors.
-    // _streamsByLevel: Object<logLevel, Object<backendName, Stream>>
+    // _streamsByLevel: Object<logLevel, Array<Object<backendName, Stream>>>
     this._streamsByLevel = Object.keys(levels)
         .reduce(function accumulateStreamsByLevel(streamsByLevel, levelName) {
             if (!levels[levelName]) {
@@ -104,10 +104,13 @@ function Logger(opts) {
                     backendName
                 ) {
                     if (streams[backendName]) {
-                        levelStreams[backendName] = streams[backendName];
+                        levelStreams.push({
+                            name: backendName,
+                            stream: streams[backendName]
+                        });
                     }
                     return levelStreams;
-                }, {});
+                }, []);
 
             return streamsByLevel;
         }, {});
