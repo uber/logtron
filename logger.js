@@ -139,9 +139,9 @@ Logger.prototype.writeEntry = function writeEntry(entry, callback) {
         this.statsd.increment('logtron.logged.' + levelName);
     }
 
-    level.transforms.forEach(function (transform) {
-        entry = transform(entry);
-    });
+    for (var i=0; i<level.transforms.length; ++i) {
+        entry = level.transforms[i](entry);
+    }
 
     parallelWrite(logStreams, entry, function (err) {
         if (!err) {
