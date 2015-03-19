@@ -21,7 +21,6 @@
     "mkdirp": "~0.3.5",
     "nodemailer": "~0.5.14",
     "readable-stream": "^1.0.27-1",
-    "run-parallel": "^1.0.0",
     "sentry-logger": "^3.0.0",
     "uber-raven": "^0.6.3-project-name",
     "winston-uber": "^1.0.0",
