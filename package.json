@@ -12,7 +12,7 @@
     "email": "raynos2@gmail.com"
   },
   "dependencies": {
-    "airlock": "^2.0.0",
+    "airlock": "^2.1.1",
     "core-util-is": "^1.0.1",
     "error": "^4.0.0",
     "inherits": "^2.0.1",
