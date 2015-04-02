@@ -69,7 +69,8 @@ function defaultBackends(config, clients) {
             statsd: clients.statsd
         }) : null,
         access: config.access ? Disk({
-            folder: config.access.logFolder
+            folder: config.access.logFolder,
+            json: config.json || false
         }) : null
     };
 }
