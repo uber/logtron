@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "body": "~4.4.2",
+    "build-changelog": "^2.1.2",
     "date-format": "0.0.2",
     "istanbul": "~0.1.46",
     "itape": "^1.5.0",
@@ -46,7 +47,8 @@
     "jshint": "jshint --verbose .",
     "jshint-pre-commit": "jshint --verbose $(git diff --cached --name-only | grep '\\.js$')",
     "cover": "istanbul cover --report html --print detail test/index.js",
-    "view-cover": "istanbul report html && opn ./coverage/index.html"
+    "view-cover": "istanbul report html && opn ./coverage/index.html",
+    "changelog": "build-changelog"
   },
   "engines": {
     "node": ">= 0.8.x"
