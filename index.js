@@ -1,12 +1,14 @@
 'use strict';
 
 var Logger = require('./logger.js');
+var File = require('./backends/file.js');
 var Disk = require('./backends/disk.js');
 var Kafka = require('./backends/kafka.js');
 var Sentry = require('./backends/sentry.js');
 var Console = require('./backends/console.js');
 
 createLogger.defaultBackends = defaultBackends;
+createLogger.File = File;
 createLogger.Disk = Disk;
 createLogger.Kafka = Kafka;
 createLogger.Sentry = Sentry;
@@ -50,6 +52,9 @@ function defaultBackends(config, clients) {
 
     return {
         _isDefaultBackends: true,
+        file: config.logFile ? File({
+            fileName: config.logFile
+        }) : null,
         disk: config.logFolder ? Disk({
             folder: config.logFolder,
             json: config.json || false

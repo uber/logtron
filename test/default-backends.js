@@ -33,6 +33,7 @@ test('empty defaultBackends', function t(assert) {
 
     assert.deepEqual(Object.keys(backends), [
         '_isDefaultBackends',
+        'file',
         'disk',
         'kafka',
         'console',

@@ -7,7 +7,7 @@ var ERROR = 50;
 var FATAL = 60;
 
 
-var defaultBackends = ['disk', 'kafka', 'console'];
+var defaultBackends = ['file', 'disk', 'kafka', 'console'];
 
 var defaultLevels = {
     trace: {
@@ -15,7 +15,7 @@ var defaultLevels = {
         level: TRACE
     },
     debug: {
-        backends: ['disk', 'console'],
+        backends: ['file', 'disk', 'console'],
         level: DEBUG
     },
     info: {
@@ -23,7 +23,7 @@ var defaultLevels = {
         level: INFO
     },
     access: {
-        backends: ['disk', 'console', 'kafka', 'access'],
+        backends: ['file', 'disk', 'console', 'kafka', 'access'],
         level: ACCESS
     },
     warn: {
@@ -31,11 +31,11 @@ var defaultLevels = {
         level: WARN
     },
     error: {
-        backends: ['disk', 'kafka', 'console', 'sentry'],
+        backends: ['file', 'disk', 'kafka', 'console', 'sentry'],
         level: ERROR
     },
     fatal: {
-        backends: ['disk', 'kafka', 'console', 'sentry'],
+        backends: ['file', 'disk', 'kafka', 'console', 'sentry'],
         level: FATAL
     }
 };
