@@ -14,6 +14,7 @@
   "dependencies": {
     "airlock": "^2.1.1",
     "core-util-is": "^1.0.1",
+    "deep-extend": "0.4.0",
     "error": "^4.0.0",
     "inherits": "^2.0.1",
     "kafka-logger": "^5.0.0",
