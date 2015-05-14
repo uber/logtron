@@ -15,6 +15,10 @@ function captureStdio(expected, fn, opts) {
     process.stdout.write = _outwrite;
     process.stderr.write = _errwrite;
 
+    if (opts && opts.raw) {
+        return buf;
+    }
+
     return buf.some(function (line) {
         return line.indexOf(expected) !== -1;
     });
