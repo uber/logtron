@@ -3,7 +3,6 @@ var path = require('path');
 var os = require('os');
 var uuid = require('uuid');
 var fs = require('fs');
-var dateFormat = require('date-format');
 var rimraf = require('rimraf');
 
 var captureStdio = require('./lib/capture-stdio.js');
@@ -46,8 +45,7 @@ test('writes pid and host to backends', function (assert) {
     function onlog2(err) {
         assert.ifError(err);
 
-        var fileUri = path.join(loc, 'rt-foobar.log-' +
-            dateFormat('yyyyMMdd'));
+        var fileUri = path.join(loc, 'rt-foobar.log');
 
         fs.readFile(fileUri, function (err, buf) {
             assert.ifError(err);

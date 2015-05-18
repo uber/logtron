@@ -3,7 +3,6 @@ var os = require('os');
 var uuid = require('uuid');
 var rimraf = require('rimraf');
 var fs = require('fs');
-var dateFormat = require('date-format');
 
 var Logger = require('../../logger.js');
 var DiskBackend = require('../../backends/disk.js');
@@ -39,7 +38,7 @@ function createLogger(opts) {
     };
 
     logger.readFile = function readFile(callback) {
-        var fileUri = 'rt-foobar.log-' + dateFormat('yyyyMMdd');
+        var fileUri = 'rt-foobar.log';
         var uri = path.join(opts.folder, fileUri);
         fs.readFile(uri, function (err, buf) {
             if (err) {

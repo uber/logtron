@@ -4,7 +4,6 @@ var test = require('tape');
 var path = require('path');
 var os = require('os');
 var uuid = require('uuid');
-var dateFormat = require('date-format');
 var fs = require('fs');
 var rimraf = require('rimraf');
 var SentryServer = require(
@@ -104,7 +103,7 @@ test('disk logging', function t(assert) {
         })
     });
 
-    var fileUri = 'rt-foo.log-' + dateFormat('yyyyMMdd');
+    var fileUri = 'rt-foo.log';
 
     logger.info('some message', {
         some: 'object'
@@ -155,7 +154,7 @@ test('access logging', function t(assert) {
             logger.access('line one', { fooOne: 'bar' });
         }));
 
-    var fileUri = 'rt-foo.log-' + dateFormat('yyyyMMdd');
+    var fileUri = 'rt-foo.log';
 
     assert.ok(captureStdio('access: line two', function log() {
         logger.access('line two', { fooTwo: 'bar'}, onLogged);

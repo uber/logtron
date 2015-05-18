@@ -3,7 +3,7 @@ var inherits = require('util').inherits;
 var EventEmitter = require('events').EventEmitter;
 
 var LoggerStream = require('./logger-stream.js');
-var DailyRotateFile = require('../lib/mkdir-daily-rotate-file.js');
+var File = require('../lib/mkdir-file.js');
 
 function DiskBackend(opts) {
     if (!(this instanceof DiskBackend)) {
@@ -25,9 +25,8 @@ inherits(DiskBackend, EventEmitter);
 DiskBackend.prototype.createStream =
     function createStream(meta, opts) {
         var fileName = meta.team + '-' + meta.project + '.log';
-        var logger = new DailyRotateFile({
+        var logger = new File({
             filename: path.join(this.folder, fileName),
-            datePattern: '-yyyyMMdd',
             json: this.json
         });
 

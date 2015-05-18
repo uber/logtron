@@ -3,7 +3,6 @@ var os = require('os');
 var fs = require('fs');
 var uuid = require('uuid');
 var test = require('tape');
-var dateFormat = require('date-format');
 var rimraf = require('rimraf');
 
 var captureStdio = require('./lib/capture-stdio.js');
@@ -34,8 +33,7 @@ test('file logging', function (assert) {
     }, function (err) {
         assert.ifError(err);
 
-        var fileUri = 'rt-foobar.log-' +
-            dateFormat('yyyyMMdd');
+        var fileUri = 'rt-foobar.log';
 
         fs.readdir(loc, function (err, files) {
             assert.ifError(err);
@@ -79,8 +77,7 @@ test('works with multiple backends', function (assert) {
     function onlog(err) {
         assert.ifError(err);
 
-        var fileUri = path.join(loc, 'rt-foobar.log-' +
-            dateFormat('yyyyMMdd'));
+        var fileUri = path.join(loc, 'rt-foobar.log');
 
         fs.readFile(fileUri, function (err, buf) {
             assert.ifError(err);
