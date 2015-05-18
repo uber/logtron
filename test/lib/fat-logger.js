@@ -5,7 +5,6 @@ var os = require('os');
 var uuid = require('uuid');
 var rimraf = require('rimraf');
 var fs = require('fs');
-var dateFormat = require('date-format');
 var assert = require('assert');
 var inherits = require('util').inherits;
 
@@ -127,7 +126,7 @@ FatLogger.prototype.destroy = function destroy() {
 FatLogger.prototype.readFile = function readFile(callback) {
     var self = this;
 
-    var fileUri = 'rt-foobar.log-' + dateFormat('yyyyMMdd');
+    var fileUri = 'rt-foobar.log';
     var uri = path.join(self.opts.folder, fileUri);
     fs.readFile(uri, function onFile(err, buf) {
         if (err) {
