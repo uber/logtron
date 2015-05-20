@@ -9,9 +9,10 @@ var rimraf = require('rimraf');
 var captureStdio = require('./lib/capture-stdio.js');
 var Logger = require('../logger.js');
 var DiskBackend = require('../backends/disk.js');
+var FileBackend = require('../backends/file.js');
 var ConsoleBackend = require('../backends/console.js');
 
-test('file logging', function (assert) {
+test('disk logging', function (assert) {
     var loc = path.join(os.tmpDir(), uuid());
 
     var logger = Logger({
@@ -48,6 +49,49 @@ test('file logging', function (assert) {
                 buf = String(buf);
                 assert.ok(buf.indexOf('some message') !== -1);
                 assert.ok(buf.indexOf('some=object') !== -1);
+
+                rimraf(loc, assert.end);
+            });
+        });
+    });
+});
+
+test('file logging', function (assert) {
+    var loc = path.join(os.tmpDir(), uuid());
+
+    var logger = Logger({
+        meta: {
+            team: 'rt',
+            project: 'foobar'
+        },
+        backends: {
+            file: FileBackend({
+                fileName: path.join(loc, 'rt-foobar.log')
+            })
+        }
+    });
+
+    assert.ok(logger);
+    assert.equal(typeof logger.info, 'function');
+
+    logger.info('some message', {
+        some: 'object'
+    }, function (err) {
+        assert.ifError(err);
+
+        var fileUri = 'rt-foobar.log';
+
+        fs.readdir(loc, function (err, files) {
+            assert.ifError(err);
+
+            assert.deepEqual(files, [fileUri]);
+
+            fs.readFile(path.join(loc, fileUri), function (err, buf) {
+                assert.ifError(err);
+
+                var entry = JSON.parse(buf);
+                assert.equal(entry.message, 'some message');
+                assert.equal(entry.some, 'object');
 
                 rimraf(loc, assert.end);
             });
