@@ -27,6 +27,7 @@ require('./kafka-is-disabled.js');
 require('./child-logger.js');
 require('./buffer-objects.js');
 require('./raw-logger.js');
+require('./writing-weird-meta-objects.js');
 
 test('removing levels', function t(assert) {
     var logger = Logger({
