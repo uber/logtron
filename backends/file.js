@@ -1,7 +1,8 @@
-var fs = require('fs');
 var inherits = require('util').inherits;
 var EventEmitter = require('events').EventEmitter;
-var Writable = require('readable-stream').Writable;
+
+var LoggerStream = require('./logger-stream.js');
+var File = require('../lib/mkdir-file.js');
 
 function FileBackend(opts) {
     if (!(this instanceof FileBackend)) {
@@ -16,17 +17,14 @@ function FileBackend(opts) {
 
 inherits(FileBackend, EventEmitter);
 
-FileBackend.prototype.createStream =
-function createStream(meta, opts) {
-    var file = fs.createWriteStream(this.fileName);
-    var logger = new Writable({
-        objectMode: true
+FileBackend.prototype.createStream = function createStream(meta, opts) {
+    var logger = new File({
+        filename: this.fileName
     });
-    logger._write = function write(entry, enc, cb) {
-        file.write(JSON.stringify(entry) + '\n');
-    };
-    return logger;
+
+    return LoggerStream(logger, {
+        highWaterMark: opts.highWaterMark
+    });
 };
 
 module.exports = FileBackend;
-
