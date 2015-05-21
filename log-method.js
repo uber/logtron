@@ -9,7 +9,15 @@ function makeLogMethod(levelName) {
 
     function log(message, meta, callback) {
         /*jshint validthis:true*/
+
+        if (typeof meta !== 'object' || meta === null) {
+            meta = {
+                nonObjectMeta: meta
+            };
+        }
+
         var entry = new Entry(levelName, message, meta, this.path);
+
         this.writeEntry(entry, callback);
     }
 }
