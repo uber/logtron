@@ -58,6 +58,10 @@ SentryBackend.prototype.createStream =
             zlib.inflate(message, function (err, buff) {
                 var sendMessage = String(buff || '');
 
+                if (e.statusCode === 429) {
+                    return;
+                }
+
                 backend.emit('warn', 'Raven failed to upload to Sentry: ', {
                     message: e.message,
                     stack: e.stack,
