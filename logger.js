@@ -33,7 +33,7 @@ function Logger(opts) {
 
     EventEmitter.call(this);
 
-    var meta = opts.meta;
+    var meta = this.meta = opts.meta;
     var transforms = opts.transforms || [];
 
     transforms.push(safeSerializeMeta);
