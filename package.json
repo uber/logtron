@@ -25,7 +25,7 @@
     "sentry-logger": "^3.0.2",
     "uber-raven": "^0.6.3-project-name",
     "winston-uber": "^1.0.0",
-    "xtend": "^3.0.0"
+    "xtend": "^4.0.0"
   },
   "devDependencies": {
     "body": "~4.4.2",
