@@ -35,6 +35,11 @@ function Logger(opts) {
 
     var meta = this.meta = opts.meta;
     var transforms = opts.transforms || [];
+    var basemetaTransforms = opts.basemetaTransforms || [];
+
+    basemetaTransforms.forEach(function initTransforms(transform) {
+        transforms.push(transform(meta));
+    });
 
     transforms.push(safeSerializeMeta);
     transforms.push(serializableErrorTransform);
