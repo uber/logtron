@@ -16,13 +16,21 @@ function ChildLogger(config) {
     }
     this.extendMeta = config.extendMeta;
     this.meta = config.meta;
+    this.strict = config.strict;
 
     var levels = config.levels || defaultLevels;
     Object.keys(levels).forEach(function (levelName) {
         if (!this.mainLogger.levels.hasOwnProperty(levelName)) {
-            throw errors.LevelRequired({level: levelName});
+            if (this.strict) {
+                throw errors.LevelRequired({level: levelName});
+            } else {
+                this[levelName] = noop;
+                this.mainLogger.warn('Child Logger Disabled level',
+                    {level: levelName});
+            }
+        } else {
+            this[levelName] = makeLogMethod(levelName);
         }
-        this[levelName] = makeLogMethod(levelName);
     }, this);
 }
 
@@ -38,3 +46,4 @@ ChildLogger.prototype.createChild = function createChild(subPath, levels) {
     return this.mainLogger.createChild(this.path + '.' + subPath, levels);
 };
 
+function noop() {}
