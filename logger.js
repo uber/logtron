@@ -167,18 +167,22 @@ Logger.prototype.writeEntry = function writeEntry(entry, callback) {
     });
 };
 
-Logger.prototype.createChild = function createChild(path, levels) {
+Logger.prototype.createChild = function createChild(path, levels, opts) {
     if (this.paths.hasOwnProperty(path)) {
         throw errors.UniquePathRequired({
             path: path,
             paths: Object.keys(this.paths)
         });
     }
+    opts = opts || {};
+
     this.paths[path] = true;
     return new ChildLogger({
         mainLogger: this,
         path: path,
-        levels: levels
+        levels: levels,
+        extendMeta: opts.extendMeta,
+        meta: opts.meta
     });
 };
 

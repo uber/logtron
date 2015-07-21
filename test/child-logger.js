@@ -71,6 +71,17 @@ test('child logger can not be constructed ' +
     assert.end();
 });
 
+test('child logger can extend meta', function t(assert) {
+    var logger = createLogger();
+    var childLogger = logger.createChild('child', {info: true}, {extendMeta: true, meta: {foo: 'bar'}});
+
+    assert.ok(captureStdio('info: child: hello foo=bar, who=world', function t() {
+        childLogger.info('hello', { who: 'world' });
+    }));
+
+    assert.end();
+});
+
 test('child logger can not be constructed ' +
     'with duplicate path indirectly', function t(assert) {
 
@@ -79,6 +90,16 @@ test('child logger can not be constructed ' +
     var child = logger.createChild('child');
     assert.throws(function () {
         child.createChild('child');
+    });
+    assert.end();
+});
+
+test('child logger can not be constructed ' +
+    'without meta when asked to extend meta', function t(assert) {
+
+    var logger = createLogger();
+    assert.throws(function () {
+        logger.createChild('child', {info: true}, {extendMeta: true});
     });
     assert.end();
 });
