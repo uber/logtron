@@ -183,7 +183,8 @@ Logger.prototype.createChild = function createChild(path, levels, opts) {
         levels: levels,
         extendMeta: opts.extendMeta,
         meta: opts.meta,
-        strict: opts.strict
+        strict: opts.strict,
+        fieldObjs: opts.fieldObjs
     });
 };
 
