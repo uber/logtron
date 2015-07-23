@@ -22,15 +22,15 @@ function ChildLogger(config) {
 
     this.fieldObjs.forEach(function validateFields(objConf) {
         if (!objConf || !objConf.object || typeof objConf.object !== 'object') {
-            throw errors.FieldObjectRequired;
+            throw errors.FieldObjectRequired();
         }
         if (!objConf.fields || typeof objConf.fields !== 'object') {
-            throw errors.FieldDefinitionRequired;
+            throw errors.FieldDefinitionRequired();
         }
         Object.keys(objConf.fields).forEach(function validateField(field) {
             var fieldName = objConf.fields[field];
             if (!(typeof fieldName === 'string' || fieldName instanceof String)) {
-                throw errors.FieldBadDef;
+                throw errors.FieldBadDef();
             }
         });
     });
@@ -60,7 +60,6 @@ ChildLogger.prototype.writeEntry = function writeEntry(entry, callback) {
             dotty.put(fieldMeta, fieldName, dotty.get(obj, field));
         });
     }, this);
-    console.log(fieldMeta);
     if (this.extendMeta) {
         // entry meta should always win
         entry.meta = xtend(this.meta, fieldMeta, entry.meta);
