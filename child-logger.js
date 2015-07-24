@@ -12,25 +12,25 @@ module.exports = ChildLogger;
 function ChildLogger(config) {
     this.mainLogger = config.mainLogger;
     this.path = config.path;
-    if (config.extendMeta && !(config.meta || config.fieldObjs)) {
+    if (config.extendMeta && !(config.meta || config.metaFilter)) {
         throw errors.MetaRequired;
     }
     this.extendMeta = config.extendMeta;
     this.meta = config.meta || {};
     this.strict = config.strict;
-    this.fieldObjs = config.fieldObjs || [];
+    this.metaFilter = config.metaFilter || [];
 
-    this.fieldObjs.forEach(function validateFields(objConf) {
-        if (!objConf || !objConf.object || typeof objConf.object !== 'object') {
-            throw errors.FieldObjectRequired();
+    this.metaFilter.forEach(function validateFilter(filter) {
+        if (!filter || !filter.object || typeof filter.object !== 'object') {
+            throw errors.FilterObjectRequired();
         }
-        if (!objConf.fields || typeof objConf.fields !== 'object') {
-            throw errors.FieldDefinitionRequired();
+        if (!filter.mappings || typeof filter.mappings !== 'object') {
+            throw errors.FilterMappingsRequired();
         }
-        Object.keys(objConf.fields).forEach(function validateField(field) {
-            var fieldName = objConf.fields[field];
-            if (!(typeof fieldName === 'string' || fieldName instanceof String)) {
-                throw errors.FieldBadDef();
+        Object.keys(filter.mappings).forEach(function validateMappings(srcName) {
+            var dstName = filter.mappings[srcName];
+            if (typeof dstName !== 'string') {
+                throw errors.FilterBadDst();
             }
         });
     });
@@ -52,17 +52,17 @@ function ChildLogger(config) {
 }
 
 ChildLogger.prototype.writeEntry = function writeEntry(entry, callback) {
-    var fieldMeta = {};
-    this.fieldObjs.forEach(function readObjConf(objConf) {
-        var obj = objConf.object;
-        Object.keys(objConf.fields).forEach(function readField(field) {
-            var fieldName = objConf.fields[field];
-            dotty.put(fieldMeta, fieldName, dotty.get(obj, field));
-        });
-    }, this);
     if (this.extendMeta) {
+        var filteredMeta = {};
+        this.metaFilter.forEach(function readFilter(filter) {
+            var obj = filter.object;
+            Object.keys(filter.mappings).forEach(function readMapping(srcName) {
+                var dstName = filter.mappings[srcName];
+                dotty.put(filteredMeta, dstName, dotty.get(obj, srcName));
+            });
+        }, this);
         // entry meta should always win
-        entry.meta = xtend(this.meta, fieldMeta, entry.meta);
+        entry.meta = xtend(this.meta, filteredMeta, entry.meta);
     }
     this.mainLogger.writeEntry(entry, callback);
 };

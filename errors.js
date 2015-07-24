@@ -36,21 +36,22 @@ var LevelDisabled = TypedError({
     message: 'logtron: Child Logger could not enable level' +
         'because backend for {level} does not exist in parent.\n'
 });
-var FieldObjectRequired = TypedError({
-    type: 'logtron.child-logger.field-logger.missing-object',
+var FilterObjectRequired = TypedError({
+    type: 'logtron.child-logger.meta-filter.missing-object',
     message: 'logtron: Child Logger requires an object key' +
-        'containing an object for each object Fields to be logged.\n'
+        'containing an object in each filter.\n'
 });
-var FieldDefinitionRequired = TypedError({
-    type: 'logtron.child-logger.field-logger.missing-definition',
-    message: 'logtron: Child Logger requires at least one field per ' +
-        'each object fields.\n'
+var FilterMappingsRequired = TypedError({
+    type: 'logtron.child-logger.meta-filter.missing-mappings',
+    message: 'logtron: Child Logger requires at least one mapping for' +
+        'each filtered object.\n'
 });
-var FieldBadDef = TypedError({
-    type: 'logtron.child-logger.field-logger.bad-definition',
-    message: 'logtron: Child Logger format for field logging fields is ' +
-        'an object in which the key is the location in the object to fetch the ' +
-        'value from and a string which is the name it will be saved to the meta with.\n'
+var FilterBadDst = TypedError({
+    type: 'logtron.child-logger.meta-filter.bad-definition',
+    message: 'logtron: Format for filters mappings is ' +
+        'an object. Each key is the location in the target object to ' +
+        'fetch the value from; each value is a string which is the ' +
+        'the target destination on the meta object.\n'
 });
 
 module.exports = {
@@ -60,7 +61,7 @@ module.exports = {
     LevelRequired: LevelRequired,
     UniquePathRequired: UniquePathRequired,
     LevelDisabled: LevelDisabled,
-    FieldObjectRequired: FieldObjectRequired,
-    FieldDefinitionRequired: FieldDefinitionRequired,
-    FieldBadDef: FieldBadDef
+    FilterObjectRequired: FilterObjectRequired,
+    FilterMappingsRequired: FilterMappingsRequired,
+    FilterBadDst: FilterBadDst
 };

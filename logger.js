@@ -184,7 +184,7 @@ Logger.prototype.createChild = function createChild(path, levels, opts) {
         extendMeta: opts.extendMeta,
         meta: opts.meta,
         strict: opts.strict,
-        fieldObjs: opts.fieldObjs
+        metaFilter: opts.metaFilter
     });
 };
 
