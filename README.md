@@ -374,10 +374,7 @@ Opts specificies options for the child logger. The available
   at log time. This allows you to automatically add the 
   current value of an object property to the log meta without 
   having to manual add the values at each log site. The format
-  of a filter object is:
-```js
-{'oject': targetObj, 'mappings': {'src': 'dst', 'src2': 'dst2'}}
-```
+  of a filter object is: `{'oject': targetObj, 'mappings': {'src': 'dst', 'src2': 'dst2'}}`
   Each filter has an object key which is the target the data
   will be taken from. The mappings object contains keys which
   are the src of the data on the target object as a dot path 
@@ -385,7 +382,8 @@ Opts specificies options for the child logger. The available
   A log site can still override this destination though.
 
 ```js
-logger.createChild("supervisor", {
+
+logger.createChild("requestHandler", {
     info: true,
     warn: true,
     log: true,
@@ -393,8 +391,13 @@ logger.createChild("supervisor", {
 }, {
     extendMeta: true,
     meta: {
-        myBaseMetaKey: 'myBaseMetaVal'
-    }
+        sessionKey: 'abc123'
+    },
+    metaFilter: [
+        {object: res, mappings: {
+            'headersSent' : 'headersSent'
+        }
+    ]
 })
 ```
 
