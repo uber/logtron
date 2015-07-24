@@ -374,7 +374,7 @@ Opts specificies options for the child logger. The available
   at log time. This allows you to automatically add the 
   current value of an object property to the log meta without 
   having to manual add the values at each log site. The format
-  of a filter object is: `{'oject': targetObj, 'mappings': {'src': 'dst', 'src2': 'dst2'}}`
+  of a filter object is: `{'oject': targetObj, 'mappings': {'src': 'dst', 'src2': 'dst2'}}`.
   Each filter has an object key which is the target the data
   will be taken from. The mappings object contains keys which
   are the src of the data on the target object as a dot path 
@@ -390,9 +390,13 @@ logger.createChild("requestHandler", {
     trace: true
 }, {
     extendMeta: true,
+    // Each time we log this will include the session key
     meta: {
         sessionKey: 'abc123'
     },
+    // Each time we log this will include if the headers
+    // have been written to the client yet based on the
+    // current value of res.headersSent
     metaFilter: [
         {object: res, mappings: {
             'headersSent' : 'headersSent'
