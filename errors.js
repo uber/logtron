@@ -23,7 +23,7 @@ var BackendsRequired = TypedError({
 // The following have been added since the transition to logtron.
 var LevelRequired = TypedError({
     type: 'logtron.child-logger.additional-level.required',
-    message: 'logtron: Logger must configure at least one ' +
+    message: 'logtron: Child Logger in strict mode must configure at least one ' +
         'backend to store log level {level} produced by child logger.\n'
 });
 var UniquePathRequired = TypedError({
@@ -31,11 +31,17 @@ var UniquePathRequired = TypedError({
     message: 'logtron: Child logger must be constructed with ' +
         'a unique path\n. {path} has already been used.\n'
 });
+var LevelDisabled = TypedError({
+    type: 'logtron.child-logger.additional-level.disabled',
+    message: 'logtron: Child Logger could not enable level' +
+        'because backend for {level} does not exist in parent.\n'
+});
 
 module.exports = {
     OptsRequired: OptsRequired,
     MetaRequired: MetaRequired,
     BackendsRequired: BackendsRequired,
     LevelRequired: LevelRequired,
-    UniquePathRequired: UniquePathRequired
+    UniquePathRequired: UniquePathRequired,
+    LevelDisabled: LevelDisabled
 };

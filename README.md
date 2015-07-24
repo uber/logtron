@@ -87,7 +87,7 @@ type Logger := {
     error: (message: String, meta: Object, cb? Callback) => void,
     fatal: (message: String, meta: Object, cb? Callback) => void,
     writeEntry: (Entry, cb?: Callback) => void,
-    createChild: (path: String, Object<levelName: String>) => Logger
+    createChild: (path: String, Object<levelName: String>, Object<opts: String>) => Logger
 }
 
 type LogtronLogger := EventEmitter & Logger & {
@@ -344,7 +344,7 @@ It's expected that shutdown the process once you have verified
   that the `fatal()` error message has been logged. You can
   do either a hard or soft shutdown.
 
-#### `logger.createChild({path: String, levels?})`
+#### `logger.createChild({path: String, levels?, opts?})`
 
 The `createChild` method returns a Logger that will create entries at a
   nested path.
@@ -360,12 +360,28 @@ Child loggers implement log level methods for every key in
   there isn't an object laying around with the keys you
   need.
 
+Opts specificies options for the child logger. The available
+  options are to enable strict mode, and to add metadata to
+  each entry. To enable strict mode pass the `strict` key in
+  the options with a true value. In strict mode the child
+  logger will ensure that each log level has a corrisponding
+  backend in the parent logger. Otherwise the logger will
+  replace any missing parent methods with a no-op function.
+  If you wish to add meta data to each log entry the child
+  set the `extendMeta` key to `true` and the `meta` to an
+  object with your meta data.
+
 ```js
 logger.createChild("supervisor", {
     info: true,
     warn: true,
     log: true,
     trace: true
+}, {
+    extendMeta: true,
+    meta: {
+        myBaseMetaKey: 'myBaseMetaVal'
+    }
 })
 ```
 

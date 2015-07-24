@@ -103,3 +103,31 @@ test('child logger can not be constructed ' +
     });
     assert.end();
 });
+
+test('child logger can be constructed ' +
+    'with extra levels without strict', function t(assert) {
+
+    var logger = createLogger();
+    var childLogger;
+    assert.ok(captureStdio('warn: Child Logger Disabled level level=floop', function t() {
+        childLogger = logger.createChild('child', {info: true, floop: true}, 'Got warning for disabled level');
+    }));
+    assert.ok(captureStdio('info: child: hello who=world', function t() {
+        childLogger.info('hello', { who: 'world' });
+    }), 'Enabled levels can log');
+    assert.notok(captureStdio('floop: child: hello who=world', function t() {
+        childLogger.floop('hello', { who: 'world' });
+    }), 'Disabled levels do not log');
+
+    assert.end();
+});
+
+test('child logger can not be constructed ' +
+    'with extra levels with strict', function t(assert) {
+
+    var logger = createLogger();
+    assert.throws(function () {
+        logger.createChild('child', {info: true, floop:true}, {strict: true});
+    });
+    assert.end();
+});
