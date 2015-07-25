@@ -36,6 +36,23 @@ var LevelDisabled = TypedError({
     message: 'logtron: Child Logger could not enable level' +
         'because backend for {level} does not exist in parent.\n'
 });
+var FilterObjectRequired = TypedError({
+    type: 'logtron.child-logger.meta-filter.missing-object',
+    message: 'logtron: Child Logger requires an object key' +
+        'containing an object in each filter.\n'
+});
+var FilterMappingsRequired = TypedError({
+    type: 'logtron.child-logger.meta-filter.missing-mappings',
+    message: 'logtron: Child Logger requires at least one mapping for' +
+        'each filtered object.\n'
+});
+var FilterBadDst = TypedError({
+    type: 'logtron.child-logger.meta-filter.bad-definition',
+    message: 'logtron: Format for filters mappings is ' +
+        'an object. Each key is the location in the target object to ' +
+        'fetch the value from; each value is a string which is the ' +
+        'the target destination on the meta object.\n'
+});
 
 module.exports = {
     OptsRequired: OptsRequired,
@@ -43,5 +60,8 @@ module.exports = {
     BackendsRequired: BackendsRequired,
     LevelRequired: LevelRequired,
     UniquePathRequired: UniquePathRequired,
-    LevelDisabled: LevelDisabled
+    LevelDisabled: LevelDisabled,
+    FilterObjectRequired: FilterObjectRequired,
+    FilterMappingsRequired: FilterMappingsRequired,
+    FilterBadDst: FilterBadDst
 };

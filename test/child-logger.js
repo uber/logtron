@@ -82,6 +82,23 @@ test('child logger can extend meta', function t(assert) {
     assert.end();
 });
 
+test('child logger can log filtered meta', function t(assert) {
+    var foo = {bar: 'baz'};
+    var logger = createLogger();
+    var childLogger = logger.createChild('child', {info: true},
+        {extendMeta: true, metaFilter: [{object: foo, mappings:{bar:'fooBar'}}]});
+
+    assert.ok(captureStdio('info: child: hello fooBar=baz, who=world', function t() {
+        childLogger.info('hello', { who: 'world' });
+    }));
+    foo.bar = 'qux';
+    assert.ok(captureStdio('info: child: hello fooBar=qux, who=world', function t() {
+        childLogger.info('hello', { who: 'world' });
+    }));
+
+    assert.end();
+});
+
 test('child logger can not be constructed ' +
     'with duplicate path indirectly', function t(assert) {
 
@@ -95,11 +112,31 @@ test('child logger can not be constructed ' +
 });
 
 test('child logger can not be constructed ' +
-    'without meta when asked to extend meta', function t(assert) {
+    'without meta or fields when asked to extend meta', function t(assert) {
 
     var logger = createLogger();
     assert.throws(function () {
         logger.createChild('child', {info: true}, {extendMeta: true});
+    });
+    assert.end();
+});
+
+test('child logger can not be constructed ' +
+    'with bad field config', function t(assert) {
+    var foo = {bar: 'baz'};
+
+    var logger = createLogger();
+    assert.throws(function () {
+        logger.createChild('child', {info: true}, 
+            {extendMeta: true, metaFilter: [{mappings:{bar:'fooBar'}}]});
+    });
+    assert.throws(function () {
+        logger.createChild('child1', {info: true}, 
+            {extendMeta: true, metaFilter: [{object: foo}]});
+    });
+    assert.throws(function () {
+        logger.createChild('child2', {info: true}, 
+            {extendMeta: true, metaFilter: [{object: foo, mappings:{bar:{}}}]});
     });
     assert.end();
 });

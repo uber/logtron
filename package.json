@@ -15,6 +15,7 @@
     "airlock": "^2.1.1",
     "core-util-is": "^1.0.1",
     "deep-extend": "0.4.0",
+    "dotty": "0.0.2",
     "error": "^7.0.1",
     "inherits": "^2.0.1",
     "kafka-logger": "^5.0.1",
