@@ -360,7 +360,7 @@ Child loggers implement log level methods for every key in
   there isn't an object laying around with the keys you
   need.
 
-Opts specificies options for the child logger. The available
+Opts specifies options for the child logger. The available
   options are to enable strict mode, and to add metadata to
   each entry. To enable strict mode pass the `strict` key in
   the options with a true value. In strict mode the child
