@@ -119,10 +119,6 @@ function Logger(opts) {
 
             return streamsByLevel;
         }, {});
-
-    // This is an index of all the paths used by child loggers, so no
-    // child logger can be created twice for the same path.
-    this.paths = {};
 }
 
 inherits(Logger, EventEmitter);
@@ -170,14 +166,6 @@ Logger.prototype.writeEntry = function writeEntry(entry, callback) {
 Logger.prototype.createChild = function createChild(path, levels, opts) {
     opts = opts || {};
 
-    if (opts.enforcePaths && this.paths.hasOwnProperty(path)) {
-        throw errors.UniquePathRequired({
-            path: path,
-            paths: Object.keys(this.paths)
-        });
-    }
-
-    this.paths[path] = true;
     return new ChildLogger({
         mainLogger: this,
         path: path,
