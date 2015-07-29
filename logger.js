@@ -168,13 +168,14 @@ Logger.prototype.writeEntry = function writeEntry(entry, callback) {
 };
 
 Logger.prototype.createChild = function createChild(path, levels, opts) {
-    if (this.paths.hasOwnProperty(path)) {
+    opts = opts || {};
+
+    if (opts.enforcePaths && this.paths.hasOwnProperty(path)) {
         throw errors.UniquePathRequired({
             path: path,
             paths: Object.keys(this.paths)
         });
     }
-    opts = opts || {};
 
     this.paths[path] = true;
     return new ChildLogger({

@@ -61,12 +61,12 @@ test('child logger path', function t(assert) {
 });
 
 test('child logger can not be constructed ' +
-    'with duplicate path', function t(assert) {
+    'with duplicate path when enforced', function t(assert) {
 
     var logger = createLogger();
     logger.createChild('child');
     assert.throws(function () {
-        logger.createChild('child');
+        logger.createChild('child', undefined, {enforcePaths: true});
     });
     assert.end();
 });
@@ -103,10 +103,10 @@ test('child logger can not be constructed ' +
     'with duplicate path indirectly', function t(assert) {
 
     var logger = createLogger();
-    logger.createChild('child.child');
-    var child = logger.createChild('child');
+    logger.createChild('child.child', undefined, {enforcePaths: true});
+    var child = logger.createChild('child', undefined, {enforcePaths: true});
     assert.throws(function () {
-        child.createChild('child');
+        child.createChild('child', undefined, {enforcePaths: true});
     });
     assert.end();
 });
