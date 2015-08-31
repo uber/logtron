@@ -40,6 +40,7 @@
     "rimraf": "^2.2.8",
     "tap-spec": "^0.1.9",
     "tape": "^3.5.0",
+    "uber-licence": "^1.5.1",
     "uuid": "~1.4.1"
   },
   "scripts": {
