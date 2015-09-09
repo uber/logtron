@@ -62,6 +62,8 @@ function defaultBackends(config, clients) {
         kafka: config.kafka ? Kafka({
             leafHost: config.kafka.leafHost,
             leafPort: config.kafka.leafPort,
+            proxyHost: config.kafka.proxyHost,
+            proxyPort: config.kafka.proxyPort,
             isDisabled: clients.isKafkaDisabled,
             statsd: clients.statsd,
             kafkaClient: clients.kafkaClient
