@@ -47,7 +47,7 @@ test('kafka logging with rest client', function(assert) {
         assert.ok(obj.msg.indexOf('writing to kafka') !== -1);
         server.close();
     });
-
+    var count = 0;
     var restProxyPort = 10000 + Math.floor(Math.random() * 20000);
     var restProxyServer = http.createServer(function(req, res) {
         var url = 'localhost:' + restProxyPort;
@@ -66,13 +66,10 @@ test('kafka logging with rest client', function(assert) {
                 assert.ok(body.indexOf('info') !== -1);
                 assert.ok(body.indexOf('writing to kafka') !== -1);
             });
+            count++;
+            res.end();
         }
     }).listen(restProxyPort);
-    restProxyServer.addListener( "connection", function( socket ) {
-        setTimeout(function() {
-          socket.destroy();
-        },1000);
-    } );
 
     var logger = Logger({
         meta: {
@@ -91,6 +88,7 @@ test('kafka logging with rest client', function(assert) {
 
     logger.info('writing to kafka');
     setTimeout(function() {
+        assert.equal(count, 1);
         logger.destroy();
         restProxyServer.close();
         assert.end();
