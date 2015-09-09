@@ -43,6 +43,8 @@ function KafkaBackend(opts) {
     this.properties = opts.properties || {};
     this.leafHost = opts.leafHost || 'localhost';
     this.leafPort = opts.leafPort || 9093;
+    this.proxyHost = opts.proxyHost || 'localhost';
+    this.proxyPort = opts.proxyPort;
     this.statsd = opts.statsd || null;
     this.kafkaClient = opts.kafkaClient || null;
     this.isDisabled = opts.isDisabled || null;
@@ -63,6 +65,8 @@ KafkaBackend.prototype.createStream =
             },
             leafHost: this.leafHost,
             leafPort: this.leafPort,
+            proxyHost: this.proxyHost,
+            proxyPort: this.proxyPort,
             kafkaClient: this.kafkaClient,
             isDisabled: this.isDisabled,
             kafkaProber: new Prober({
@@ -86,6 +90,9 @@ KafkaBackend.prototype.createStream =
 
             if (logger.kafkaClient.zk) {
                 logger.kafkaClient.zk.close();
+            }
+            if (logger.kafkaRestClient) {
+                logger.kafkaRestClient.close();
             }
         });
     };
