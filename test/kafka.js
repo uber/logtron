@@ -118,3 +118,47 @@ test('kafka logging with rest client', function(assert) {
         assert.end();
     },100);
 });
+
+test('logger -> close', function (assert) {
+    var server = KafkaServer(function onMessage(err, msg) {
+        assert.ifError(err, 'no unexpected server error');
+
+        assert.equal(msg.topic, 'rt-foobar');
+
+        var obj = msg.messages[0].payload;
+
+        assert.equal(obj.level, 'info');
+        assert.ok(obj.msg.indexOf('writing to kafka') !== -1);
+    });
+
+    var logger = Logger({
+        meta: {
+            team: 'rt',
+            project: 'foobar'
+        },
+        backends: {
+            kafka: KafkaBackend({
+                leafHost: 'localhost',
+                leafPort: server.port
+            })
+        }
+    });
+
+    logger.info('writing to kafka'); // warmup
+    setTimeout(runit, 100);
+
+    function runit() {
+        // for real
+        logger.info('writing to kafka');
+        logger.close(function closed(err) {
+            assert.ifError(err, 'no unexpected close error');
+            assert.ok(true, 'logger closed');
+            finish();
+        });
+    }
+
+    function finish() {
+        server.close();
+        assert.end();
+    }
+});
