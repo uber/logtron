@@ -39,13 +39,19 @@ function LoggerStream(logger, opts, destroyCb) {
 
 inherits(LoggerStream, Writable);
 
-LoggerStream.prototype._write = function write(entry, enc, cb) {
+LoggerStream.prototype.write = function write(entry, cb) {
     var self = this;
 
     if (self.closed) {
         cb(null); // lal
-        return;
+        return false;
     }
+
+    return Writable.prototype.write.call(self, entry, cb);
+};
+
+LoggerStream.prototype._write = function write(entry, enc, cb) {
+    var self = this;
 
     var level = entry.level;
     var message = entry.message;
