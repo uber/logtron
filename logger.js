@@ -21,6 +21,7 @@
 var extend = require('xtend');
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('inherits');
+var collectParallel = require('collect-parallel/object');
 
 var parallelWrite = require('./lib/parallel-write.js');
 var defaultLevels = require('./default-levels.js');
@@ -144,6 +145,26 @@ function Logger(opts) {
 inherits(Logger, EventEmitter);
 
 Logger.prototype.instrument = function instrument() { };
+
+Logger.prototype.close = function close(callback) {
+    collectParallel(this.streams, closeEachStream, finish);
+
+    function closeEachStream(stream, i, done) {
+        if (stream && stream.close) {
+            stream.close(done);
+        }
+    }
+
+    function finish(err, results) {
+        for (var i = 0; i < results; i++) {
+            if (results[i].err) {
+                callback(results[i].err);
+                return;
+            }
+        }
+        callback(null);
+    }
+};
 
 Logger.prototype.destroy = function destroy() {
     Object.keys(this.streams).forEach(function destroyStreamForLevel(name) {
