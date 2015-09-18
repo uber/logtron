@@ -26,7 +26,8 @@ var KafkaServer = require(
 var Logger = require('../index.js');
 
 test('kafka is disabled', function (assert) {
-    var server = KafkaServer(function onMessage(msg) {
+    var server = KafkaServer(function onMessage(err, msg) {
+        assert.ifError(err, 'no unexpected server error');
         server.emit('message', msg);
     });
 
@@ -39,8 +40,7 @@ test('kafka is disabled', function (assert) {
         backends: Logger.defaultBackends({
             kafka: {
                 leafHost: 'localhost',
-                leafPort: server.port,
-                
+                leafPort: server.port
             }
         }, {
             isKafkaDisabled: function isDisabled() {

@@ -246,7 +246,9 @@ test('sentry logging', function t(assert) {
 
 test('kafka logging', function t(assert) {
     var messages = [];
-    var server = KafkaServer(function listener(msg) {
+    var server = KafkaServer(function listener(err, msg) {
+        assert.ifError(err, 'no unexpected server error');
+
         messages.push(msg);
 
         if (messages.length === 2) {

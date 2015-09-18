@@ -32,16 +32,49 @@ function LoggerStream(logger, opts, destroyCb) {
     });
 
     this.logger = logger;
+    this.closed = false;
+    this._closeCallback = null;
     this._destroyCb = destroyCb || null;
 }
 
 inherits(LoggerStream, Writable);
 
 LoggerStream.prototype._write = function write(entry, enc, cb) {
+    var self = this;
+
+    if (self.closed) {
+        cb(null); // lal
+        return;
+    }
+
     var level = entry.level;
     var message = entry.message;
     var meta = entry.meta;
-    this.logger.log(level, message, meta, cb);
+    self.logger.log(level, message, meta, function writeDone(err) {
+        cb(err);
+        if (self.closed && !self._writableState.length) {
+            self._onDrain();
+        }
+    });
+};
+
+LoggerStream.prototype.close = function close(callback) {
+    if (this.closed) {
+        callback(new Error('LoggerStream already closed'));
+        return;
+    }
+
+    this.closed = true;
+    this._closeCallback = callback;
+
+    if (!this._writableState.length) {
+        this._onDrain();
+    }
+};
+
+LoggerStream.prototype._onDrain = function onDrain() {
+    this.destroy();
+    this._closeCallback(null);
 };
 
 LoggerStream.prototype.destroy = function destroy() {

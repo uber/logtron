@@ -89,7 +89,8 @@ test('writing a buffer object (sentry)', function t(assert) {
 
 test('writing a buffer object (kafka)', function t(assert) {
     var messages = [];
-    var logger = KafkaLogger(function listener(msg) {
+    var logger = KafkaLogger(function listener(err, msg) {
+        assert.ifError(err, 'no unexpected server error');
         messages.push(msg);
 
         if (messages.length === 1) {
