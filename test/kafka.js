@@ -29,7 +29,9 @@ var Logger = require('../logger.js');
 var KafkaBackend = require('../backends/kafka.js');
 
 test('kafka logging', function (assert) {
-    var server = KafkaServer(function onMessage(msg) {
+    var server = KafkaServer(function onMessage(err, msg) {
+        assert.ifError(err, 'no unexpected server error');
+
         assert.equal(msg.topic, 'rt-foobar');
 
         var obj = msg.messages[0].payload;
@@ -60,7 +62,9 @@ test('kafka logging', function (assert) {
 
 
 test('kafka logging with rest client', function(assert) {
-    var server = KafkaServer(function onMessage(msg) {
+    var server = KafkaServer(function onMessage(err, msg) {
+        assert.ifError(err, 'no unexpected server error');
+
         assert.equal(msg.topic, 'rt-foobarx');
         var obj = msg.messages[0].payload;
         assert.equal(obj.level, 'info');

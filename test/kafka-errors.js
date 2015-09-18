@@ -25,7 +25,8 @@ var test = require('tape');
 var KafkaLogger = require('./lib/kafka-logger.js');
 
 test('can .error("message", new Error())', function (assert) {
-    var logger = KafkaLogger(function (msg) {
+    var logger = KafkaLogger(function (err, msg) {
+        assert.ifError(err, 'no unexpected server error');
         var obj = msg.messages[0].payload;
 
         assert.notEqual(obj.msg.indexOf('hello'), -1);
@@ -41,7 +42,8 @@ test('can .error("message", new Error())', function (assert) {
 });
 
 test('can error("message", { error: Error() })', function (assert) {
-    var logger = KafkaLogger(function (msg) {
+    var logger = KafkaLogger(function (err, msg) {
+        assert.ifError(err, 'no unexpected server error');
         var obj = msg.messages[0].payload;
 
         assert.notEqual(obj.msg.indexOf('some message'), -1);
@@ -61,7 +63,8 @@ test('can error("message", { error: Error() })', function (assert) {
 });
 
 test('can error(msg, { someKey: Error() })', function (assert) {
-    var logger = KafkaLogger(function (msg) {
+    var logger = KafkaLogger(function (err, msg) {
+        assert.ifError(err, 'no unexpected server error');
         var obj = msg.messages[0].payload;
 
         assert.notEqual(obj.msg.indexOf('some message'), -1);

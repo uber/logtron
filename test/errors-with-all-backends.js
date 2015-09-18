@@ -108,7 +108,8 @@ test('can error(message, { err: err })', function t(assert) {
         });
     }
 
-    function kafkaListener(msg) {
+    function kafkaListener(err, msg) {
+        assert.ifError(err, 'no unexpected server error');
         kafkaMessages.push(msg);
     }
 
