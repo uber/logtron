@@ -38,6 +38,10 @@ function AddPidAndHost(baseMeta) {
             meta._pid = baseMeta.pid;
         }
 
+        if (!meta._processTitle && baseMeta.processTitle) {
+            meta._processTitle = baseMeta.processTitle;
+        }
+
         return new Entry(entry.level, entry.message, entry.meta, entry.path);
     }
 }
