@@ -364,7 +364,7 @@ Opts specifies options for the child logger. The available
   options are to enable strict mode, and to add metadata to
   each entry. To enable strict mode pass the `strict` key in
   the options with a true value. In strict mode the child
-  logger will ensure that each log level has a corrisponding
+  logger will ensure that each log level has a corresponding
   backend in the parent logger. Otherwise the logger will
   replace any missing parent methods with a no-op function.
   If you wish to add meta data to each log entry the child
