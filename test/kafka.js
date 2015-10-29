@@ -94,6 +94,12 @@ test('kafka logging with rest client', function(assert) {
             res.end();
         }
     }).listen(restProxyPort);
+    var blacklistPort = 10000 + Math.floor(Math.random() * 20000);
+    var blacklistServer = http.createServer(function(req, res) {
+        assert.equal(req.method, 'POST');
+        assert.equal(req.url, '/topics/rt-foobarx');
+        res.end();
+    }).listen(blacklistPort);
 
     var logger = Logger({
         meta: {
@@ -105,7 +111,10 @@ test('kafka logging with rest client', function(assert) {
                 leafHost: 'localhost',
                 leafPort: server.port,
                 proxyHost: 'localhost',
-                proxyPort: restProxyPort
+                proxyPort: restProxyPort,
+                maxRetries: 1,
+                blacklistMigrator: true,
+                blacklistMigratorUrl: 'localhost:' + blacklistPort
             })
         }
     });
@@ -115,6 +124,7 @@ test('kafka logging with rest client', function(assert) {
         assert.equal(count, 1);
         logger.destroy();
         restProxyServer.close();
+        blacklistServer.close();
         assert.end();
     },100);
 });
