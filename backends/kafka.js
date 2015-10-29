@@ -45,6 +45,9 @@ function KafkaBackend(opts) {
     this.leafPort = opts.leafPort || 9093;
     this.proxyHost = opts.proxyHost || 'localhost';
     this.proxyPort = opts.proxyPort;
+    this.maxRetries = opts.maxRetries || 1;
+    this.blacklistMigrator = opts.blacklistMigrator || false;
+    this.blacklistMigratorUrl = opts.blacklistMigratorUrl || null;
     this.statsd = opts.statsd || null;
     this.kafkaClient = opts.kafkaClient || null;
     this.isDisabled = opts.isDisabled || null;
@@ -67,6 +70,9 @@ KafkaBackend.prototype.createStream =
             leafPort: this.leafPort,
             proxyHost: this.proxyHost,
             proxyPort: this.proxyPort,
+            maxRetries: this.maxRetries,
+            blacklistMigrator: this.blacklistMigrator,
+            blacklistMigratorUrl: this.blacklistMigratorUrl,
             kafkaClient: this.kafkaClient,
             isDisabled: this.isDisabled,
             kafkaProber: new Prober({
