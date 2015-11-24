@@ -75,6 +75,7 @@ KafkaBackend.prototype.createStream =
             blacklistMigratorUrl: this.blacklistMigratorUrl,
             kafkaClient: this.kafkaClient,
             isDisabled: this.isDisabled,
+            statsd: this.statsd,
             kafkaProber: new Prober({
                 title: 'kafka-winston',
                 enabled: true,
