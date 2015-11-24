@@ -97,7 +97,7 @@ test('kafka logging with rest client', function(assert) {
     var blacklistPort = 10000 + Math.floor(Math.random() * 20000);
     var blacklistServer = http.createServer(function(req, res) {
         assert.equal(req.method, 'POST');
-        assert.equal(req.url, '/topics/rt-foobarx');
+        assert.equal(req.url, '/topics/blacklist?topic=rt-foobarx');
         res.end();
     }).listen(blacklistPort);
 
