@@ -51,6 +51,7 @@ function KafkaBackend(opts) {
     this.statsd = opts.statsd || null;
     this.kafkaClient = opts.kafkaClient || null;
     this.isDisabled = opts.isDisabled || null;
+    this.disableNodeSol = opts.disableNodeSol || false;
 }
 
 inherits(KafkaBackend, EventEmitter);
@@ -76,6 +77,7 @@ KafkaBackend.prototype.createStream =
             kafkaClient: this.kafkaClient,
             isDisabled: this.isDisabled,
             statsd: this.statsd,
+            disableNodeSol: this.disableNodeSol,
             kafkaProber: new Prober({
                 title: 'kafka-winston',
                 enabled: true,
