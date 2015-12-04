@@ -86,7 +86,8 @@ function defaultBackends(config, clients) {
             proxyPort: config.kafka.proxyPort,
             isDisabled: clients.isKafkaDisabled,
             statsd: config.kafka.statsd,
-            kafkaClient: clients.kafkaClient
+            kafkaClient: clients.kafkaClient,
+            disableNodeSol: config.kafka.disableNodeSol
         }) : null,
         console: config.console ? Console({
             raw: config.raw || false
