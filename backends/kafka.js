@@ -89,12 +89,14 @@ KafkaBackend.prototype.createStream =
             highWaterMark: opts.highWaterMark
         }, function destroy() {
             /*jshint camelcase: false*/
-            var producer = logger.kafkaClient.get_producer(topic);
-            if (producer && producer.connection &&
-                producer.connection.connection &&
-                producer.connection.connection._connection
-            ) {
-                producer.connection.connection._connection.destroy();
+            if(logger.kafkaClient) {
+                var producer = logger.kafkaClient.get_producer(topic);
+                if (producer && producer.connection &&
+                    producer.connection.connection &&
+                    producer.connection.connection._connection
+                ) {
+                    producer.connection.connection._connection.destroy();
+                }
             }
 
             if (logger.kafkaClient.zk) {
