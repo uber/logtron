@@ -97,11 +97,12 @@ KafkaBackend.prototype.createStream =
                 ) {
                     producer.connection.connection._connection.destroy();
                 }
+
+                if (logger.kafkaClient.zk) {
+                    logger.kafkaClient.zk.close();
+                }
             }
 
-            if (logger.kafkaClient.zk) {
-                logger.kafkaClient.zk.close();
-            }
             if (logger.kafkaRestClient) {
                 logger.kafkaRestClient.close();
             }
