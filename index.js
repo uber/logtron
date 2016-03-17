@@ -84,6 +84,8 @@ function defaultBackends(config, clients) {
             leafPort: config.kafka.leafPort,
             proxyHost: config.kafka.proxyHost,
             proxyPort: config.kafka.proxyPort,
+            blacklistMigrator: config.kafka.blacklistMigrator,
+            blacklistMigratorUrl: config.kafka.blacklistMigratorUrl,
             isDisabled: clients.isKafkaDisabled,
             statsd: config.kafka.statsd,
             kafkaClient: clients.kafkaClient
