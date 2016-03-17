@@ -19,7 +19,6 @@
 // THE SOFTWARE.
 
 var test = require('tape');
-var test = require('tape');
 
 var http = require('http');
 var KafkaServer = require(
