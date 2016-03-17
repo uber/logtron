@@ -29,6 +29,7 @@ var Logger = require('../logger.js');
 var KafkaBackend = require('../backends/kafka.js');
 
 test('kafka logging', function (assert) {
+    var logger;
     var server = KafkaServer(function onMessage(err, msg) {
         assert.ifError(err, 'no unexpected server error');
 
@@ -44,7 +45,7 @@ test('kafka logging', function (assert) {
         assert.end();
     });
 
-    var logger = Logger({
+    logger = Logger({
         meta: {
             team: 'rt',
             project: 'foobar'
