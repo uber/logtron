@@ -19,7 +19,6 @@
 // THE SOFTWARE.
 
 var test = require('tape');
-var test = require('tape');
 var KafkaServer = require(
     'kafka-logger/test/lib/kafka-server.js');
 
