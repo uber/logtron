@@ -32,7 +32,7 @@ function safeSerializeMeta(entry) {
     if (serializedFailed !== null) {
         meta = {
             error: 'logtron failed to serialize meta',
-            reason: serializedFailed
+            reason: serializedFailed.message
         };
     }
 
