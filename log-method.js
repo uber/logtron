@@ -30,7 +30,7 @@ function makeLogMethod(levelName) {
     function log(message, meta, callback) {
         /*jshint validthis:true*/
 
-        if (typeof meta !== 'object' || meta === null) {
+        if (meta !== undefined && (typeof meta !== 'object' || meta === null)) {
             meta = {
                 nonObjectMeta: meta
             };
