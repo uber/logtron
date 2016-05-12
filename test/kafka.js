@@ -70,6 +70,7 @@ test('kafka logging with rest client', function(assert) {
         assert.equal(obj.level, 'info');
         assert.ok(obj.msg.indexOf('writing to kafka') !== -1);
         server.close();
+        shutdown();
     });
     var count = 0;
     var restProxyPort = 10000 + Math.floor(Math.random() * 20000);
@@ -94,6 +95,10 @@ test('kafka logging with rest client', function(assert) {
             res.end();
         }
     }).listen(restProxyPort);
+    // allow process to exit with keep-alive sockets
+    restProxyServer.on('connection', function (socket) {
+        socket.unref();
+    });
     var blacklistPort = 10000 + Math.floor(Math.random() * 20000);
     var blacklistServer = http.createServer(function(req, res) {
         assert.equal(req.method, 'POST');
@@ -119,14 +124,24 @@ test('kafka logging with rest client', function(assert) {
         }
     });
 
-    logger.info('writing to kafka');
     setTimeout(function() {
-        assert.equal(count, 1);
-        logger.destroy();
-        restProxyServer.close();
-        blacklistServer.close();
-        assert.end();
-    },100);
+        // wait for rest client init.
+        logger.info('writing to kafka');
+    }, 1000);
+
+    function shutdown() {
+        logger.close(function closed(err) {
+            assert.ifError(err, 'no unexpected close error');
+            assert.ok(true, 'logger closed');
+        });
+        setTimeout(function finish() {
+            // wait for rest client to flush.
+            assert.equal(count, 1);
+            restProxyServer.close();
+            blacklistServer.close();
+            assert.end();
+        }, 1000);
+    }
 });
 
 test('logger -> close', function (assert) {
