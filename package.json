@@ -15,6 +15,7 @@
     "airlock": "^2.1.1",
     "collect-parallel": "^1.0.1",
     "core-util-is": "^1.0.1",
+    "date-format": "0.0.2",
     "deep-extend": "0.4.0",
     "dotty": "0.0.2",
     "error": "^7.0.1",
@@ -31,7 +32,6 @@
   },
   "devDependencies": {
     "body": "~4.4.2",
-    "date-format": "0.0.2",
     "istanbul": "~0.1.46",
     "itape": "^1.5.0",
     "jscs": "^1.7.3",
