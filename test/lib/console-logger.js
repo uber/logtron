@@ -30,7 +30,8 @@ function createLogger(opts) {
         meta: {},
         backends: {
             console: ConsoleBackend({
-                raw: opts ? opts.raw : false
+                raw: opts ? opts.raw : false,
+                timestampFormat: opts ? opts.timestampFormat : null
             })
         }
     });

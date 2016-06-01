@@ -30,6 +30,8 @@ function ConsoleBackend(opts) {
     }
 
     this.raw = opts ? opts.raw : false;
+    this.colorize = opts ? opts.colorize : false;
+    this.timestampFormat = opts ? opts.timestampFormat : null;
 
     EventEmitter.call(this);
 }
@@ -40,7 +42,9 @@ ConsoleBackend.prototype.createStream =
     function createStream(meta, opts) {
         var logger = new ConsoleLogger({
             timestamp: true,
-            raw: this.raw
+            raw: this.raw,
+            colorize: this.colorize,
+            timestampFormat: this.timestampFormat
         });
 
         return LoggerStream(logger, {
