@@ -133,7 +133,7 @@ test('kafka logging with rest client', function(assert) {
         }, 1000);
     }
 });
-
+/*
 test('kafka logging without kafka-logger', function(assert) {
     var count = 0;
     var restProxyPort = 10000 + Math.floor(Math.random() * 20000);
@@ -197,7 +197,7 @@ test('kafka logging without kafka-logger', function(assert) {
             assert.end();
         }, 1000);
     }
-});
+});*/
 
 test('logger -> close', function (assert) {
     var server = KafkaServer(function onMessage(err, msg) {
