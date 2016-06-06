@@ -41,16 +41,20 @@ function KafkaBackend(opts) {
     }
 
     this.properties = opts.properties || {};
-    this.leafHost = opts.leafHost || 'localhost';
-    this.leafPort = opts.leafPort || 9093;
+    this.leafHost = opts.leafHost;
+    this.leafPort = opts.leafPort;
     this.proxyHost = opts.proxyHost || 'localhost';
     this.proxyPort = opts.proxyPort;
-    this.maxRetries = opts.maxRetries || 1;
-    this.blacklistMigrator = opts.blacklistMigrator || false;
-    this.blacklistMigratorUrl = opts.blacklistMigratorUrl || null;
+    this.maxRetries = opts.maxRetries || 3;
     this.statsd = opts.statsd || null;
     this.kafkaClient = opts.kafkaClient || null;
     this.isDisabled = opts.isDisabled || null;
+    if ('batching' in opts) {
+        this.batching = options.batching;
+    }
+    if ('batchingWhitelist' in options) {
+        this.batchingWhitelist = options.batchingWhitelist;
+    }
 }
 
 inherits(KafkaBackend, EventEmitter);
@@ -71,11 +75,11 @@ KafkaBackend.prototype.createStream =
             proxyHost: this.proxyHost,
             proxyPort: this.proxyPort,
             maxRetries: this.maxRetries,
-            blacklistMigrator: this.blacklistMigrator,
-            blacklistMigratorUrl: this.blacklistMigratorUrl,
             kafkaClient: this.kafkaClient,
             isDisabled: this.isDisabled,
             statsd: this.statsd,
+            batching: this.batching,
+            batchingWhitelist: this.batchingWhitelist,
             kafkaProber: new Prober({
                 title: 'kafka-winston',
                 enabled: true,
