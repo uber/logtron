@@ -50,10 +50,10 @@ function KafkaBackend(opts) {
     this.kafkaClient = opts.kafkaClient || null;
     this.isDisabled = opts.isDisabled || null;
     if ('batching' in opts) {
-        this.batching = options.batching;
+        this.batching = opts.batching;
     }
-    if ('batchingWhitelist' in options) {
-        this.batchingWhitelist = options.batchingWhitelist;
+    if ('batchingWhitelist' in opts) {
+        this.batchingWhitelist = opts.batchingWhitelist;
     }
 }
 
