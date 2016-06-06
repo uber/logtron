@@ -51,6 +51,7 @@ function KafkaBackend(opts) {
     this.statsd = opts.statsd || null;
     this.kafkaClient = opts.kafkaClient || null;
     this.isDisabled = opts.isDisabled || null;
+    this.disableNodeSol = opts.disableNodeSol || false;
 }
 
 inherits(KafkaBackend, EventEmitter);
@@ -76,6 +77,7 @@ KafkaBackend.prototype.createStream =
             kafkaClient: this.kafkaClient,
             isDisabled: this.isDisabled,
             statsd: this.statsd,
+            disableNodeSol: this.disableNodeSol,
             kafkaProber: new Prober({
                 title: 'kafka-winston',
                 enabled: true,
@@ -87,17 +89,20 @@ KafkaBackend.prototype.createStream =
             highWaterMark: opts.highWaterMark
         }, function destroy() {
             /*jshint camelcase: false*/
-            var producer = logger.kafkaClient.get_producer(topic);
-            if (producer && producer.connection &&
-                producer.connection.connection &&
-                producer.connection.connection._connection
-            ) {
-                producer.connection.connection._connection.destroy();
+            if(logger.kafkaClient) {
+                var producer = logger.kafkaClient.get_producer(topic);
+                if (producer && producer.connection &&
+                    producer.connection.connection &&
+                    producer.connection.connection._connection
+                ) {
+                    producer.connection.connection._connection.destroy();
+                }
+
+                if (logger.kafkaClient.zk) {
+                    logger.kafkaClient.zk.close();
+                }
             }
 
-            if (logger.kafkaClient.zk) {
-                logger.kafkaClient.zk.close();
-            }
             if (logger.kafkaRestClient) {
                 logger.kafkaRestClient.close();
             }
