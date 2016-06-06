@@ -134,7 +134,7 @@ test('kafka logging with rest client', function(assert) {
     }
 });
 
-test('kafka logging without kafka-logger', function(assert) {
+test('kafka logging without k7', function(assert) {
     var count = 0;
     var restProxyPort = 10000 + Math.floor(Math.random() * 20000);
     var restProxyServer = http.createServer(function(req, res) {
@@ -156,6 +156,7 @@ test('kafka logging without kafka-logger', function(assert) {
             });
             count++;
             res.end();
+            shutdown();
         }
     }).listen(restProxyPort);
     // allow process to exit with keep-alive sockets
@@ -180,9 +181,6 @@ test('kafka logging without kafka-logger', function(assert) {
     setTimeout(function() {
         // wait for rest client init.
         logger.info('writing to kafka');
-        setTimeout(function() {
-            shutdown();
-        }, 500);
     }, 1000);
 
     function shutdown() {
@@ -195,7 +193,7 @@ test('kafka logging without kafka-logger', function(assert) {
             assert.equal(count, 1);
             restProxyServer.close();
             assert.end();
-        }, 500);
+        }, 1000);
     }
 });
 
