@@ -63,7 +63,7 @@ KafkaBackend.prototype.createStream =
     function createStream(meta, opts) {
         var topic = meta.team + '-' + meta.project;
 
-        var logger = new KafkaLogger({
+        var kafkaLoggerOptions = {
             topic: topic,
             properties: this.properties,
             dateFormats: {
@@ -78,14 +78,19 @@ KafkaBackend.prototype.createStream =
             kafkaClient: this.kafkaClient,
             isDisabled: this.isDisabled,
             statsd: this.statsd,
-            batching: this.batching,
-            batchingWhitelist: this.batchingWhitelist,
             kafkaProber: new Prober({
                 title: 'kafka-winston',
                 enabled: true,
                 statsd: this.statsd
             })
-        });
+        };
+        if (this.batching) {
+            kafkaLoggerOptions.batching = this.batching;
+        }
+        if (this.batchingWhitelist) {
+            kafkaLoggerOptions.batchingWhitelist = this.batchingWhitelist;
+        }
+        var logger = new KafkaLogger(kafkaLoggerOptions);
 
         return LoggerStream(logger, {
             highWaterMark: opts.highWaterMark
