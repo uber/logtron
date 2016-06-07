@@ -156,7 +156,6 @@ test('kafka logging without k7', function(assert) {
             });
             count++;
             res.end();
-            shutdown();
         }
     }).listen(restProxyPort);
     // allow process to exit with keep-alive sockets
@@ -181,6 +180,7 @@ test('kafka logging without k7', function(assert) {
     setTimeout(function() {
         // wait for rest client init.
         logger.info('writing to kafka');
+        shutdown();
     }, 1000);
 
     function shutdown() {
