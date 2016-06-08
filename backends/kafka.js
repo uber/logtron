@@ -41,16 +41,20 @@ function KafkaBackend(opts) {
     }
 
     this.properties = opts.properties || {};
-    this.leafHost = opts.leafHost || 'localhost';
-    this.leafPort = opts.leafPort || 9093;
+    this.leafHost = opts.leafHost;
+    this.leafPort = opts.leafPort;
     this.proxyHost = opts.proxyHost || 'localhost';
     this.proxyPort = opts.proxyPort;
-    this.maxRetries = opts.maxRetries || 1;
-    this.blacklistMigrator = opts.blacklistMigrator || false;
-    this.blacklistMigratorUrl = opts.blacklistMigratorUrl || null;
+    this.maxRetries = opts.maxRetries || 3;
     this.statsd = opts.statsd || null;
     this.kafkaClient = opts.kafkaClient || null;
     this.isDisabled = opts.isDisabled || null;
+    if ('batching' in opts) {
+        this.batching = opts.batching;
+    }
+    if ('batchingWhitelist' in opts) {
+        this.batchingWhitelist = opts.batchingWhitelist;
+    }
 }
 
 inherits(KafkaBackend, EventEmitter);
@@ -59,7 +63,7 @@ KafkaBackend.prototype.createStream =
     function createStream(meta, opts) {
         var topic = meta.team + '-' + meta.project;
 
-        var logger = new KafkaLogger({
+        var kafkaLoggerOptions = {
             topic: topic,
             properties: this.properties,
             dateFormats: {
@@ -71,8 +75,6 @@ KafkaBackend.prototype.createStream =
             proxyHost: this.proxyHost,
             proxyPort: this.proxyPort,
             maxRetries: this.maxRetries,
-            blacklistMigrator: this.blacklistMigrator,
-            blacklistMigratorUrl: this.blacklistMigratorUrl,
             kafkaClient: this.kafkaClient,
             isDisabled: this.isDisabled,
             statsd: this.statsd,
@@ -81,7 +83,14 @@ KafkaBackend.prototype.createStream =
                 enabled: true,
                 statsd: this.statsd
             })
-        });
+        };
+        if (this.batching) {
+            kafkaLoggerOptions.batching = this.batching;
+        }
+        if (this.batchingWhitelist) {
+            kafkaLoggerOptions.batchingWhitelist = this.batchingWhitelist;
+        }
+        var logger = new KafkaLogger(kafkaLoggerOptions);
 
         return LoggerStream(logger, {
             highWaterMark: opts.highWaterMark
