@@ -136,7 +136,7 @@ test('kafka logging with rest client', function(assert) {
 
 test('kafka logging without k7', function(assert) {
     var count = 0;
-    var restProxyPort = 10000 + Math.floor(Math.random() * 20000);
+    var restProxyPort = 10000 + Math.floor(Math.random() * 15000);
     var restProxyServer = http.createServer(function(req, res) {
         var url = 'localhost:' + restProxyPort;
         var messages = {};
