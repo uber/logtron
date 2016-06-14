@@ -133,7 +133,7 @@ test('kafka logging with rest client', function(assert) {
         }, 1000);
     }
 });
-/*
+
 test('kafka logging without k7', function(assert) {
     var count = 0;
     var restProxyPort = 10000 + Math.floor(Math.random() * 15000);
@@ -184,18 +184,19 @@ test('kafka logging without k7', function(assert) {
     }, 1000);
 
     function shutdown() {
-        logger.close(function closed(err) {
-            assert.ifError(err, 'no unexpected close error');
-            assert.ok(true, 'logger closed');
-        });
+
         setTimeout(function finish() {
+            logger.close(function closed(err) {
+                assert.ifError(err, 'no unexpected close error');
+                assert.ok(true, 'logger closed');
+            });
             // wait for rest client to flush.
             assert.equal(count, 1);
             restProxyServer.close();
             assert.end();
         }, 2000);
     }
-});*/
+});
 
 test('logger -> close', function (assert) {
     var server = KafkaServer(function onMessage(err, msg) {
