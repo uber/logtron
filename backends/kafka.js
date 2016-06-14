@@ -51,6 +51,8 @@ function KafkaBackend(opts) {
     this.isDisabled = opts.isDisabled || null;
     if ('batching' in opts) {
         this.batching = opts.batching;
+    } else {
+        this.batching = true;
     }
     if ('batchingWhitelist' in opts) {
         this.batchingWhitelist = opts.batchingWhitelist;
@@ -84,9 +86,9 @@ KafkaBackend.prototype.createStream =
                 statsd: this.statsd
             })
         };
-        if (this.batching) {
-            kafkaLoggerOptions.batching = this.batching;
-        }
+
+        kafkaLoggerOptions.batching = this.batching;
+
         if (this.batchingWhitelist) {
             kafkaLoggerOptions.batchingWhitelist = this.batchingWhitelist;
         }
@@ -96,16 +98,18 @@ KafkaBackend.prototype.createStream =
             highWaterMark: opts.highWaterMark
         }, function destroy() {
             /*jshint camelcase: false*/
-            var producer = logger.kafkaClient.get_producer(topic);
-            if (producer && producer.connection &&
-                producer.connection.connection &&
-                producer.connection.connection._connection
-            ) {
-                producer.connection.connection._connection.destroy();
-            }
+            if (logger.kafkaClient) {
+                var producer = logger.kafkaClient.get_producer(topic);
+                if (producer && producer.connection &&
+                    producer.connection.connection &&
+                    producer.connection.connection._connection
+                ) {
+                    producer.connection.connection._connection.destroy();
+                }
 
-            if (logger.kafkaClient.zk) {
-                logger.kafkaClient.zk.close();
+                if (logger.kafkaClient.zk) {
+                    logger.kafkaClient.zk.close();
+                }
             }
             if (logger.kafkaRestClient) {
                 logger.kafkaRestClient.close();

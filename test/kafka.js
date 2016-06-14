@@ -134,69 +134,6 @@ test('kafka logging with rest client', function(assert) {
     }
 });
 
-test('kafka logging without k7', function(assert) {
-    var count = 0;
-    var restProxyPort = 10000 + Math.floor(Math.random() * 20000);
-    var restProxyServer = http.createServer(function(req, res) {
-        var url = 'localhost:' + restProxyPort;
-        var messages = {};
-        messages[url] = ['rt-foobarx'];
-        if (req.method === 'GET') {
-            res.end(JSON.stringify(messages));
-        } else if (req.method === 'POST') {
-            assert.ok(req.headers.timestamp);
-            assert.equal(req.url, '/topics/rt-foobarx');
-            var body = '';
-            req.on('data', function (data) {
-                body += data;
-            });
-            req.on('end', function () {
-                assert.ok(body.indexOf('info') !== -1);
-                assert.ok(body.indexOf('writing to kafka') !== -1);
-            });
-            count++;
-            res.end();
-        }
-    }).listen(restProxyPort);
-    // allow process to exit with keep-alive sockets
-    restProxyServer.on('connection', function (socket) {
-        socket.unref();
-    });
-
-    var logger = Logger({
-        meta: {
-            team: 'rt',
-            project: 'foobarx'
-        },
-        backends: {
-            kafka: KafkaBackend({
-                proxyHost: 'localhost',
-                proxyPort: restProxyPort,
-                maxRetries: 3
-            })
-        }
-    });
-
-    setTimeout(function() {
-        // wait for rest client init.
-        logger.info('writing to kafka');
-        shutdown();
-    }, 1000);
-
-    function shutdown() {
-        logger.close(function closed(err) {
-            assert.ifError(err, 'no unexpected close error');
-            assert.ok(true, 'logger closed');
-        });
-        setTimeout(function finish() {
-            // wait for rest client to flush.
-            assert.equal(count, 1);
-            restProxyServer.close();
-            assert.end();
-        }, 1000);
-    }
-});
-
 test('logger -> close', function (assert) {
     var server = KafkaServer(function onMessage(err, msg) {
         assert.ifError(err, 'no unexpected server error');
