@@ -31,7 +31,7 @@ function safeSerializeMeta(entry) {
     var serializedFailed = trySerialize(meta);
 
     if (serializedFailed !== null) {
-        var entryString = util.inspect(entry, { depth: null });
+        var entryString = util.inspect(entry, { depth: 4 });
         meta = {
             error: 'logtron failed to serialize meta',
             reason: serializedFailed.message,
