@@ -39,15 +39,24 @@ function serializableError(entry) {
 }
 
 function makeSerializable(error) {
-    Object.defineProperty(error, 'message', {
-        value: error.message,
-        enumerable: true,
-        configurable: true
-    });
+    if (isConfigurable(error, 'message')) {
+        Object.defineProperty(error, 'message', {
+            value: error.message,
+            enumerable: true,
+            configurable: true
+        });
+    }
 
-    Object.defineProperty(error, 'stack', {
-        value: error.stack,
-        enumerable: true,
-        configurable: true
-    });
+    if (isConfigurable(error, 'stack')) {
+        Object.defineProperty(error, 'stack', {
+            value: error.stack,
+            enumerable: true,
+            configurable: true
+        });
+    }
+}
+
+function isConfigurable(obj, field) {
+    var dp = Object.getOwnPropertyDescriptor(obj, field);
+    return dp && dp.configurable;
 }
