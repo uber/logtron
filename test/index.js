@@ -30,6 +30,7 @@ require('./backend-without-destroy.js');
 require('./console-errors.js');
 require('./console.js');
 require('./errors-in-backend.js');
+require('./errors-with-all-backends.js');
 require('./file-errors.js');
 require('./file.js');
 require('./instrument.js');

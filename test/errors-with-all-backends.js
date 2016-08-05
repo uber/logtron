@@ -78,7 +78,7 @@ test('can error(message, { err: err })', function t(assert) {
         var sentryMsg = sentryMessages[0];
 
         // console.log('what.', sentryMsg);
-        
+
         assert.equal(sentryMsg.extra.other, 'key');
         assert.equal(sentryMsg.extra.originalMessage,
             'some message');
@@ -106,6 +106,43 @@ test('can error(message, { err: err })', function t(assert) {
             logger.destroy();
             assert.end();
         });
+    }
+
+    function kafkaListener(err, msg) {
+        assert.ifError(err, 'no unexpected server error');
+        kafkaMessages.push(msg);
+    }
+
+    function sentryListener(msg) {
+        sentryMessages.push(msg);
+    }
+});
+
+test('does no crash when error is not configurable', function t(assert) {
+    var kafkaMessages = [];
+    var sentryMessages = [];
+    var logger = FatLogger({
+        raw: true,
+        json: true,
+        kafkaListener: kafkaListener,
+        sentryListener: sentryListener
+    });
+
+    var error = new Error('hello');
+    Object.seal(error);
+
+    assert.doesNotThrow(function log() {
+        logger.error('some message', {
+            err: error,
+        }, function delay() {
+            // delay by 100ms for sentry
+            setTimeout(onLogged, 100);
+        });
+    });
+
+    function onLogged() {
+        logger.destroy();
+        assert.end();
     }
 
     function kafkaListener(err, msg) {
