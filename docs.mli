@@ -65,8 +65,8 @@ logtron/backends/disk := ({
 }) => Backend
 
 logtron/backends/kafka := ({
-    leafHost?: String,
-    leafPort?: Number,
+    proxyHost?: String,
+    proxyPort?: Number,
     properties?: Object,
     statsd?: Object
 }) => Backend
@@ -83,8 +83,8 @@ logtron/logger := ((LoggerOpts) => LogtronLogger) & {
     defaultBackends: (config: {
         logFolder?: String,
         kafka?: {
-            leafHost: String,
-            leafPort: Number
+            proxyHost: String,
+            proxyPort: Number
         },
         console?: Boolean,
         sentry?: {

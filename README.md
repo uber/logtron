@@ -24,7 +24,7 @@ var logger = Logger({
     backends: Logger.defaultBackends({
         logFolder: '/var/log/nodejs',
         console: true,
-        kafka: { leafHost: 'localhost', leafPort: 9093 },
+        kafka: { proxyHost: 'localhost', proxyPort: 9093 },
         sentry: { id: '{sentryId}' }
     }, {
         // pass in a statsd client to turn on an airlock prober
@@ -101,8 +101,8 @@ logtron/logger := ((LoggerOpts) => LogtronLogger) & {
     defaultBackends: (config: {
         logFolder?: String,
         kafka?: {
-            leafHost: String,
-            leafPort: Number
+            proxyHost: String,
+            proxyPort: Number
         },
         console?: Boolean,
         sentry?: {
@@ -434,8 +434,8 @@ logtron := Logger & {
     defaultBackends: (config: {
         logFolder?: String,
         kafka?: {
-            leafHost: String,
-            leafPort: Number
+            proxyHost: String,
+            proxyPort: Number
         },
         console?: Boolean,
         sentry?: {
@@ -482,13 +482,13 @@ You can also configure a reusable `kafkaClient` on the `clients`
 
 `options.kafka` is an optional object, if you want the kafka
   backend enabled you should set this to an object containing
-  a `"leafHost"` and `"leafPort"` key.
+  a `"proxyHost"` and `"proxyPort"` key.
 
-`options.kafka.leafHost` should be a string and is the hostname 
-  of the kafka server to write to.
+`options.kafka.proxyHost` should be a string and is the hostname 
+  of the kafka REST proxy server to write to.
 
-`options.kafka.leafPort` should be a port and is the port
-  of the kafka server to write to.
+`options.kafka.proxyPort` should be a port and is the port
+  of the kafka REST proxy server to write to.
 
 #### `options.console`
 
@@ -699,8 +699,8 @@ The `Disk` depends on `meta.team` and `meta.project` to be
 
 ```ocaml
 logtron/backends/kafka := (options: {
-    leafHost: String,
-    leafPort: Number,
+    proxyHost: String,
+    proxyPort: Number,
     statsd?: Object,
     isDisabled: () => Boolean
 }) => {
@@ -714,13 +714,13 @@ logtron/backends/kafka := (options: {
 The `Kafka` backend depends on `meta.team` and `meta.project`
   and uses those to define which topic it will write to.
 
-#### `options.leafHost`
+#### `options.proxyHost`
 
-Specify the `leafHost` which we should use when connecting to kafka
+Specify the `proxyHost` which we should use when connecting to kafka REST proxy
 
-#### `options.leafPort`
+#### `options.proxyPort`
 
-Specify the `leafPort` which we should use when connecting to kafka
+Specify the `proxyPort` which we should use when connecting to kafka REST proxy
 
 #### `options.statsd`
 
