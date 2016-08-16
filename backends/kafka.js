@@ -57,6 +57,10 @@ function KafkaBackend(opts) {
     if ('batchingWhitelist' in opts) {
         this.batchingWhitelist = opts.batchingWhitelist;
     }
+
+    if (this.leafHost || this.leafPort) {
+        throw new Error('[logtron] kafka7 is deprecated');
+    }
 }
 
 inherits(KafkaBackend, EventEmitter);
