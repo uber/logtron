@@ -20,7 +20,7 @@
 
 var test = require('tape');
 var KafkaServer = require(
-    'kafka-logger/test/lib/kafka-server.js');
+    './lib/kafka-rest-server.js');
 
 var Logger = require('../index.js');
 
@@ -38,8 +38,8 @@ test('kafka is disabled', function (assert) {
         },
         backends: Logger.defaultBackends({
             kafka: {
-                leafHost: 'localhost',
-                leafPort: server.port
+                proxyHost: 'localhost',
+                proxyPort: server.port
             }
         }, {
             isKafkaDisabled: function isDisabled() {

@@ -44,8 +44,8 @@ test('can error(message, { err: err })', function t(assert) {
             err: new Error('hello'),
             other: 'key'
         }, function delay() {
-            // delay by 100ms for sentry
-            setTimeout(onLogged, 100);
+            // delay by 1000ms for sentry
+            setTimeout(onLogged, 1000);
         });
     }, {
         raw: true
@@ -62,6 +62,7 @@ test('can error(message, { err: err })', function t(assert) {
         assert.equal(consoleObj.err.message, 'hello');
         assert.equal(consoleObj.other, 'key');
         assert.equal(consoleObj.message, 'some message');
+
 
         assert.equal(kafkaMessages.length, 1);
         var payload = kafkaMessages[0].messages[0].payload;

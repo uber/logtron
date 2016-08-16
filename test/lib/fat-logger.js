@@ -29,8 +29,7 @@ var dateFormat = require('date-format');
 var assert = require('assert');
 var inherits = require('util').inherits;
 
-var KafkaServer = require(
-    'kafka-logger/test/lib/kafka-server.js');
+var KafkaServer = require('./kafka-rest-server.js');
 var SentryServer = require(
     'sentry-logger/test/lib/sentry-server.js');
 var Logger = require('../../logger.js');
@@ -86,8 +85,8 @@ function FatLogger(opts) {
             }),
             disk: DiskBackend(opts),
             kafka: KafkaBackend({
-                leafHost: 'localhost',
-                leafPort: self.kafkaServer.port,
+                proxyHost: 'localhost',
+                proxyPort: self.kafkaServer.port,
                 isDisabled: false,
                 statsd: null,
                 kafkaClient: null

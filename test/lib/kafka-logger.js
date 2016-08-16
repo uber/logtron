@@ -20,8 +20,7 @@
 
 'use strict';
 
-var KafkaServer = require(
-    'kafka-logger/test/lib/kafka-server.js');
+var KafkaServer = require('./kafka-rest-server.js');
 var Logger = require('../../index.js');
 
 module.exports = KafkaLogger;
@@ -36,8 +35,8 @@ function KafkaLogger(listener) {
         },
         backends: Logger.defaultBackends({
             kafka: {
-                leafHost: 'localhost',
-                leafPort: server.port
+                proxyHost: 'localhost',
+                proxyPort: server.port
             }
         })
     });

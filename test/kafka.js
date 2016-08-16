@@ -21,8 +21,7 @@
 var test = require('tape');
 
 var http = require('http');
-var KafkaServer = require(
-    'kafka-logger/test/lib/kafka-server.js');
+var KafkaServer = require('./lib/kafka-rest-server.js');
 
 var Logger = require('../logger.js');
 var KafkaBackend = require('../backends/kafka.js');
@@ -51,8 +50,8 @@ test('kafka logging', function (assert) {
         },
         backends: {
             kafka: KafkaBackend({
-                leafHost: 'localhost',
-                leafPort: server.port
+                proxyHost: 'localhost',
+                proxyPort: server.port
             })
         }
     });
@@ -61,16 +60,6 @@ test('kafka logging', function (assert) {
 });
 
 test('kafka logging with rest client', function(assert) {
-    var server = KafkaServer(function onMessage(err, msg) {
-        assert.ifError(err, 'no unexpected server error');
-
-        assert.equal(msg.topic, 'rt-foobarx');
-        var obj = msg.messages[0].payload;
-        assert.equal(obj.level, 'info');
-        assert.ok(obj.msg.indexOf('writing to kafka') !== -1);
-        server.close();
-        shutdown();
-    });
     var count = 0;
     var restProxyPort = 10000 + Math.floor(Math.random() * 20000);
     var restProxyServer = http.createServer(function(req, res) {
@@ -92,6 +81,8 @@ test('kafka logging with rest client', function(assert) {
             });
             count++;
             res.end();
+
+            setTimeout(shutdown, 200);
         }
     }).listen(restProxyPort);
     // allow process to exit with keep-alive sockets
@@ -106,8 +97,6 @@ test('kafka logging with rest client', function(assert) {
         },
         backends: {
             kafka: KafkaBackend({
-                leafHost: 'localhost',
-                leafPort: server.port,
                 proxyHost: 'localhost',
                 proxyPort: restProxyPort,
                 maxRetries: 3
@@ -129,6 +118,7 @@ test('kafka logging with rest client', function(assert) {
             // wait for rest client to flush.
             assert.equal(count, 1);
             restProxyServer.close();
+            logger.destroy();
             assert.end();
         }, 1000);
     }
@@ -153,8 +143,9 @@ test('logger -> close', function (assert) {
         },
         backends: {
             kafka: KafkaBackend({
-                leafHost: 'localhost',
-                leafPort: server.port
+                proxyHost: 'localhost',
+                proxyPort: server.port,
+                maxRetries: 3
             })
         }
     });
@@ -174,6 +165,7 @@ test('logger -> close', function (assert) {
 
     function finish() {
         server.close();
+        logger.destroy();
         assert.end();
     }
 });

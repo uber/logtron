@@ -29,8 +29,7 @@ var fs = require('fs');
 var rimraf = require('rimraf');
 var SentryServer = require(
     'sentry-logger/test/lib/sentry-server.js');
-var KafkaServer = require(
-    'kafka-logger/test/lib/kafka-server.js');
+var KafkaServer = require('./lib/kafka-rest-server.js');
 
 var defaultLevels = require('../default-levels.js');
 var captureStdio = require('./lib/capture-stdio.js');
@@ -263,8 +262,9 @@ test('kafka logging', function t(assert) {
         },
         backends: Logger.defaultBackends({
             kafka: {
-                leafHost: 'localhost',
-                leafPort: server.port
+                proxyHost: 'localhost',
+                batching: false,
+                proxyPort: server.port
             }
         })
     });
