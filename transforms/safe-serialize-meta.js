@@ -21,7 +21,6 @@
 'use strict';
 
 var Entry = require('../entry.js');
-var util = require('util');
 
 module.exports = safeSerializeMeta;
 
@@ -31,12 +30,13 @@ function safeSerializeMeta(entry) {
     var serializedFailed = trySerialize(meta);
 
     if (serializedFailed !== null) {
-        var entryString = util.inspect(entry, { depth: 4 });
         meta = {
             error: 'logtron failed to serialize meta',
             reason: serializedFailed.message,
             stack: serializedFailed.stack,
-            entry: entryString
+            entryKeys: Object.keys(meta),
+            entryLevel: entry.level,
+            entryMessage: entry.message
         };
     }
 
