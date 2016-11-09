@@ -30,15 +30,19 @@ function AddPidAndHost(baseMeta) {
     function addPidAndHost(entry) {
         var meta = entry.meta || {};
 
-        if (!meta._hostname && baseMeta.hostname) {
+        if (typeof meta === 'object' && !meta._hostname &&
+            baseMeta.hostname
+        ) {
             meta._hostname = baseMeta.hostname;
         }
 
-        if (!meta._pid && baseMeta.pid) {
+        if (typeof meta === 'object' && !meta._pid && baseMeta.pid) {
             meta._pid = baseMeta.pid;
         }
 
-        if (!meta._processTitle && baseMeta.processTitle) {
+        if (typeof meta === 'object' && !meta._processTitle &&
+            baseMeta.processTitle
+        ) {
             meta._processTitle = baseMeta.processTitle;
         }
 
