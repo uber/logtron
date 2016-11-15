@@ -62,12 +62,15 @@ SentryBackend.prototype.createStream =
             sentryProber: new Prober({
                 title: 'sentry',
                 enabled: true,
-                detectFailuresBy: 'event',
                 statsd: backend.statsd,
                 backend: ravenClient,
+                detectFailuresBy: Prober.detectBy.EVENT,
                 failureEvent: 'error',
                 successEvent: 'logged'
-            })
+            }),
+            sentryProberDetectFailuresBy: SentryLogger.detectBy.EVENT,
+            sentryProberDetectFailuresByEventFailureEvent: 'error',
+            sentryProberDetectFailuresByEventSuccessEvent: 'logged'
         });
 
         return LoggerStream(logger, {
