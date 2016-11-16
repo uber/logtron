@@ -39,6 +39,7 @@ function ChildLogger(config) {
     this.meta = config.meta || {};
     this.strict = config.strict;
     this.metaFilter = config.metaFilter || [];
+    this.levels = config.levels || defaultLevels;
 
     this.metaFilter.forEach(function validateFilter(filter) {
         if (!filter || !filter.object || typeof filter.object !== 'object') {
@@ -55,8 +56,17 @@ function ChildLogger(config) {
         });
     });
 
-    var levels = config.levels || defaultLevels;
-    Object.keys(levels).forEach(function (levelName) {
+    if (config.extendMeta && config.mergeParentMeta) {
+        this.meta = xtend(this.mainLogger.meta, this.meta);
+        if (this.mainLogger.metaFilter) {
+            var mergedMetaFilters = [];
+            mergedMetaFilters.push.apply(mergedMetaFilters, this.mainLogger.metaFilter);
+            mergedMetaFilters.push.apply(mergedMetaFilters, this.metaFilter);
+            this.metaFilter = mergedMetaFilters;
+        }
+    }
+
+    Object.keys(this.levels).forEach(function (levelName) {
         if (!this.mainLogger.levels.hasOwnProperty(levelName)) {
             if (this.strict) {
                 throw errors.LevelRequired({level: levelName});
@@ -88,7 +98,7 @@ ChildLogger.prototype.writeEntry = function writeEntry(entry, callback) {
 };
 
 ChildLogger.prototype.createChild = function createChild(subPath, levels, options) {
-    return this.mainLogger.createChild(this.path + '.' + subPath, levels, options);
+    return this.mainLogger.createChild(this.path + '.' + subPath, levels, options, this);
 };
 
 function noop() {}

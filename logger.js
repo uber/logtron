@@ -204,17 +204,18 @@ Logger.prototype.writeEntry = function writeEntry(entry, callback) {
     });
 };
 
-Logger.prototype.createChild = function createChild(path, levels, opts) {
+Logger.prototype.createChild = function createChild(path, levels, opts, mainLogger) {
     opts = opts || {};
 
     return new ChildLogger({
-        mainLogger: this,
+        mainLogger: mainLogger || this,
         path: path,
         levels: levels,
         extendMeta: opts.extendMeta,
         meta: opts.meta,
         strict: opts.strict,
-        metaFilter: opts.metaFilter
+        metaFilter: opts.metaFilter,
+        mergeParentMeta: opts.mergeParentMeta
     });
 };
 

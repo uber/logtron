@@ -369,7 +369,7 @@ Opts specifies options for the child logger. The available
   replace any missing parent methods with a no-op function.
   If you wish to add meta data to each log entry the child
   set the `extendMeta` key to `true` and the `meta` to an
-  object with your meta data. The `filterMeta` key takes an 
+  object with your meta data. The `metaFilter` key takes an
   array of objects which will create filters that are run 
   at log time. This allows you to automatically add the 
   current value of an object property to the log meta without 
@@ -379,7 +379,10 @@ Opts specifies options for the child logger. The available
   will be taken from. The mappings object contains keys which
   are the src of the data on the target object as a dot path 
   and the destination it will be placed in on the meta object.
-  A log site can still override this destination though.
+  A log site can still override this destination though. If
+  you want the child logger to inherit it's parent logger's
+  `meta` and `metaFilter`, set `mergeParentMeta` to `true`.
+  If there are conflicts, the child meta will win.
 
 ```js
 
@@ -401,7 +404,8 @@ logger.createChild("requestHandler", {
         {object: res, mappings: {
             'headersSent' : 'headersSent'
         }
-    ]
+    ],
+    mergeParentMeta: true
 })
 ```
 
