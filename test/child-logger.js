@@ -26,9 +26,9 @@ var captureStdio = require('./lib/capture-stdio.js');
 var Logger = require('../logger.js');
 var ConsoleBackend = require('../backends/console.js');
 
-function createLogger() {
+function createLogger(meta) {
     return Logger({
-        meta: {},
+        meta: meta || {},
         backends: {
             console: ConsoleBackend()
         },
@@ -68,7 +68,7 @@ test('child logger path', function t(assert) {
     assert.end();
 });
 
-test('child logger path', function t(assert) {
+test('grandchild logger path', function t(assert) {
     var logger = createLogger();
     var childLogger = logger.createChild('child');
     var grandchildLogger = childLogger.createChild('child');
@@ -91,6 +91,21 @@ test('child logger can extend meta', function t(assert) {
     assert.end();
 });
 
+test('child logger can merge parent meta', function t(assert) {
+    var logger = createLogger({bar: 'baz'});
+    var childLogger = logger.createChild(
+        'child',
+        {info: true},
+        {extendMeta: true, meta: {foo: 'bar'}, mergeParentMeta: true}
+    );
+
+    assert.ok(captureStdio('info: child: hello bar=baz, foo=bar, who=world', function t() {
+        childLogger.info('hello', { who: 'world' });
+    }));
+
+    assert.end();
+});
+
 test('child logger can log filtered meta', function t(assert) {
     var foo = {bar: 'baz'};
     var logger = createLogger();
@@ -103,6 +118,32 @@ test('child logger can log filtered meta', function t(assert) {
     foo.bar = 'qux';
     assert.ok(captureStdio('info: child: hello fooBar=qux, who=world', function t() {
         childLogger.info('hello', { who: 'world' });
+    }));
+
+    assert.end();
+});
+
+test('child logger can extend parent filtered meta', function t(assert) {
+    var foo = {bar: 'baz', haz: 'cheez'};
+    var logger = createLogger();
+    var childLogger = logger.createChild(
+        'child',
+        {info: true},
+        {extendMeta: true, metaFilter: [{object: foo, mappings:{bar:'fooBar'}}], mergeParentMeta: true}
+    );
+    var grandchildLogger = childLogger.createChild(
+        'grandchild',
+        {info: true},
+        {extendMeta: true, metaFilter: [{object: foo, mappings:{haz:'has'}}], mergeParentMeta: true}
+    );
+
+    assert.ok(captureStdio('info: child.grandchild: hello fooBar=baz, has=cheez, who=world', function t() {
+        grandchildLogger.info('hello', { who: 'world' });
+    }));
+    foo.bar = 'qux';
+    foo.haz = 'burger';
+    assert.ok(captureStdio('info: child.grandchild: hello fooBar=qux, has=burger, who=world', function t() {
+        grandchildLogger.info('hello', { who: 'world' });
     }));
 
     assert.end();
