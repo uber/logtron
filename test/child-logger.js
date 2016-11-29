@@ -106,6 +106,26 @@ test('child logger can merge parent meta', function t(assert) {
     assert.end();
 });
 
+test('child logger can merge grandparent meta', function t(assert) {
+    var logger = createLogger({bar: 'baz'});
+    var childLogger = logger.createChild(
+        'child',
+        {info: true},
+        {extendMeta: true, meta: {foo: 'bar'}, mergeParentMeta: true}
+    );
+    var grandChildLogger = childLogger.createChild(
+        'grandchild',
+        {info: true},
+        {extendMeta: true, meta: {baz: 'biz'}, mergeParentMeta: true}
+    );
+
+    assert.ok(captureStdio('info: child.grandchild: hello bar=baz, foo=bar, baz=biz, who=world', function t() {
+        grandChildLogger.info('hello', { who: 'world' });
+    }));
+
+    assert.end();
+});
+
 test('child logger can log filtered meta', function t(assert) {
     var foo = {bar: 'baz'};
     var logger = createLogger();
