@@ -97,8 +97,8 @@ ChildLogger.prototype.writeEntry = function writeEntry(entry, callback) {
     this.mainLogger.writeEntry(entry, callback);
 };
 
-ChildLogger.prototype.createChild = function createChild(subPath, levels, options) {
-    return this.mainLogger.createChild(this.path + '.' + subPath, levels, options, this);
+ChildLogger.prototype.createChild = function createChild(subPath, levels, options, mainLogger) {
+    return this.mainLogger.createChild(this.path + '.' + subPath, levels, options, mainLogger || this);
 };
 
 function noop() {}
