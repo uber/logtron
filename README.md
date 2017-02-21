@@ -1,6 +1,6 @@
 # logtron
 
-[![build status](https://secure.travis-ci.org/uber/logtron.png)](http://travis-ci.org/uber/logtron)
+[![build status](https://secure.travis-ci.org/uber/logtron.svg)](http://travis-ci.org/uber/logtron)
 
 logger used in realtime
 
