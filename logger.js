@@ -176,16 +176,18 @@ Logger.prototype.destroy = function destroy() {
 };
 
 Logger.prototype.writeEntry = function writeEntry(entry, callback) {
+    // Apply transforms before grabbing streams for the given level, since transforms
+    // may change the log level.
+    var transforms = this.levels[entry.level].transforms;
+    for (var i=0; i<transforms.length; ++i) {
+        entry = transforms[i](entry);
+    }
     var levelName = entry.level;
-    var level = this.levels[levelName];
+
     var logStreams = this._streamsByLevel[levelName];
     var logger = this;
     if (this.statsd && typeof this.statsd.increment === 'function') {
         this.statsd.increment('logtron.logged.' + levelName);
-    }
-
-    for (var i=0; i<level.transforms.length; ++i) {
-        entry = level.transforms[i](entry);
     }
 
     parallelWrite(logStreams, entry, function (err) {

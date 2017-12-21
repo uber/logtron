@@ -1,4 +1,4 @@
-// Copyright (c) 2015 Uber Technologies, Inc.
+// Copyright (c) 2017 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,46 +21,40 @@
 'use strict';
 
 var test = require('tape');
+var SentryServer = require('sentry-logger/test/lib/sentry-server.js');
 
-var Logger = require('../logger.js');
+var captureStdio = require('./lib/capture-stdio.js');
+var Logger = require('../index.js');
 
-require('./default-backends.js');
-require('./circular-objects.js');
-require('./backend-without-destroy.js');
-require('./console-errors.js');
-require('./console.js');
-require('./errors-in-backend.js');
-require('./errors-with-all-backends.js');
-require('./file-errors.js');
-require('./file.js');
-require('./instrument.js');
-require('./kafka-errors.js');
-require('./kafka.js');
-require('./level-transform.js');
-require('./optional-backends.js');
-require('./pid-and-host.js');
-require('./sentry-errors.js');
-require('./sentry.js');
-require('./stats.js');
-require('./throws-assertions.js');
-require('./access.js');
-require('./leaky-backend-master.js');
-require('./kafka-is-disabled.js');
-require('./child-logger.js');
-require('./buffer-objects.js');
-require('./raw-logger.js');
-require('./writing-weird-meta-objects.js');
-
-test('removing levels', function t(assert) {
-    var logger = Logger({
-        backends: {},
-        meta: {},
-        levels: {
-            trace: null
-        }
+test('transformed level affects choice of streams', function t(assert) {
+    var server = SentryServer(function listener(arg) {
+        assert.equal(
+            arg.message,
+            'level-transform.js: error',
+            'only "error" logged to sentry'
+        );
+        server.close();
+        assert.end();
     });
 
-    assert.equal(logger.trace, undefined);
+    var logger = Logger({
+        meta: {},
+        backends: Logger.defaultBackends({
+            console: true,
+            sentry: { id: server.dsn }
+        }),
+        transforms: [levelTransformer]
+    });
 
-    assert.end();
+    assert.ok(captureStdio('info: info', function log() {
+        logger.error('info');
+    }), '"info" error logged at info level');
+    assert.ok(captureStdio('error: error', function log() {
+        logger.error('error');
+    }), '"error" error logged at error level');
+
+    function levelTransformer(entry) {
+        entry.level = entry.message;
+        return entry;
+    }
 });
