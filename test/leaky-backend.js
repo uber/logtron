@@ -55,7 +55,7 @@ eqaulTAP(onceA.after.stream.buffer, 999,
     'onceA stream buffer is 999');
 
 var deltaA = memoryGrowth(onceA);
-eqaulTAP(deltaA > 3, true,
+eqaulTAP(deltaA > 2.5, true,
     'expected deltaA to be greater then 5 but found ' + deltaA);
 
 setTimeout(function () {
